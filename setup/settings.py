@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ativoslist.apps.AtivoslistConfig',
+    'ativosuser.apps.AtivosuserConfig',
 ]
 
 MIDDLEWARE = [
