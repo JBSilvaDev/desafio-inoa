@@ -10,7 +10,7 @@ class Command(BaseCommand):
     path = os.path.join(settings.BASE_DIR, settings.FILES_DIRS[0],'acoesb3.csv')
 
     print(path)
-    with open(path, newline='') as csvfile:
+    with open(path, newline='', encoding='utf-8') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',')
         for i, row in enumerate(spamreader):
             if i != 0:
