@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ativoslist.models import AtivosTable
+from ativos_global.models import AtivosList
 
 # Register your models here.
 
@@ -7,6 +7,6 @@ class ListaAtivosB3(admin.ModelAdmin):
   list_display = ('id', 'cod_ativo', 'empresa_nome')
   list_display_links = ('cod_ativo',)
   list_filter = ('cod_ativo',)
-  list_per_page = 10
+  list_per_page = 10,
 
-admin.site.register(AtivosTable, ListaAtivosB3)
+admin.site.register(AtivosList, ListaAtivosB3)

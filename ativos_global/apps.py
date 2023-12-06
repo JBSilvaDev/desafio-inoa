@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class AtivoslistConfig(AppConfig):
+class AtivosGlobalConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ativoslist'
+    name = 'ativos_global'

@@ -2,7 +2,7 @@ from django.core.management import BaseCommand
 import csv
 from django.conf import settings
 import os
-from ativoslist.models import AtivosTable
+from ativos_global.models import AtivosList
 
 class Command(BaseCommand):
 
@@ -14,7 +14,7 @@ class Command(BaseCommand):
         spamreader = csv.reader(csvfile, delimiter=',')
         for i, row in enumerate(spamreader):
             if i != 0:
-              att_ativo_list = AtivosTable(
+              att_ativo_list = AtivosList(
                  cod_ativo = row[0],
                  empresa_nome = row[1]
               )
