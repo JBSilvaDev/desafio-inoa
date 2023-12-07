@@ -5,7 +5,7 @@ from ativos_global.models import AtivosList
 
 # Create your views here.
 def index(request):
-  busca = request.GET.get('buscar')
+  busca = request.GET.get('cod-ativo')
   if busca:
     ativos = AtivosList.objects.filter(cod_ativo__icontains = busca)
   else:

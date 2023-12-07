@@ -1,4 +1,11 @@
 body {
   background-image: url("/static/img/home.jpg");
+  background-size: 100% ;
+  
   color: aliceblue;
+}
+section{
+  margin: 0;
+  height: 500px;
+  overflow-y: auto;
 }
