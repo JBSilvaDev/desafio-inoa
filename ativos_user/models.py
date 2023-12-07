@@ -6,6 +6,7 @@ class CodigoAtivo(models.Model):
     codigo = models.CharField(max_length=5, )
     favorito = models.BooleanField()
     em_carteira = models.BooleanField()
+    variacao_percent = models.FloatField()
 
     def __str__(self):
         return self.codigo
