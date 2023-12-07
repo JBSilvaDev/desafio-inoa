@@ -7,8 +7,7 @@ from ativos_global.models import AtivosList
 class Command(BaseCommand):
 
   def handle(self, *args, **options):
-    path = os.path.join(settings.BASE_DIR, settings.FILES_DIRS[0],'acoesb3.csv')
-
+    path = os.path.join(settings.BASE_DIR, settings.STATICFILES_DIRS,'acoesb3.csv')
     print(path)
     with open(path, newline='', encoding='utf-8') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',')
