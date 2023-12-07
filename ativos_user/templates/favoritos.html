@@ -1,28 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% load static %}
+{% block titulo %}
+Home Page
+{% endblock %}
+{% block body %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Favoritos</title>
-</head>
 
 <body>
   <p>
     Página de favoritos, exibe apenas ativos salvos pelo usuario
   </p>
-  <li>
-    Cod ativo 1
-  </li>
-  <li>
-    Cod ativo 2
-  </li>
-  <li>
-    Cod ativo 3
-  </li>
-  <li>
-    ...
-  </li>
+  <form method="get" action="">
+    <input type="text" name="cod-ativo" placeholder="Buscar ativo...">
+    <input type="submit" value="Buscar">
+  </form>
+  <section class="ativos-list">
+    <ul>
+    {% for ativo in ativos %}
+      <li>{{ ativo.codigo }}</li>
+    {% endfor %}
+    </ul>
+  </section>
 </body>
 
-</html>
+{% endblock %}
