@@ -5,6 +5,12 @@ Home Page
 {% endblock %}
 {% block body %}
 <body>
+  <p>
+    Barra de navegação - Favoritos/login/cadastro/logout
+  </p>
+  <p>
+    Ao clicar em um ativo, deve abrir uma página com detalhes sobre ele, nesta página deverá ter a opção (se user estiver logado) de salvar nos favoritos
+  </p>
   <section class="index">
     <p>
       Página de boas vindas e exibição global de ativos<br>
@@ -17,7 +23,9 @@ Home Page
     <section class="ativos-list">
       <ul>
       {% for ativo in ativos %}
-        <li>{{ ativo.cod_ativo }}</li>
+        <a href="#">
+          <li>{{ ativo.cod_ativo }}</li>
+        </a>
       {% endfor %}
       </ul>
     </section>

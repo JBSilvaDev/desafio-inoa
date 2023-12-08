@@ -8,6 +8,10 @@ Home Page
 
 <body>
   <p>
+    Barra de navegação - Favoritos/login/cadastro/logout
+  </p>
+  <Botao>Botao para remover favorito / Botao para adicionar ou remover da carteira</p>
+  <p>
     Página de favoritos, exibe apenas ativos salvos pelo usuario
   </p>
   <form method="get" action="">
@@ -17,10 +21,11 @@ Home Page
   <section class="ativos-list">
     <ul>
     {% for ativo in ativos %}
-      <li>{{ ativo.codigo }}</li>
+      <li>{{ ativo.codigo_ativo }} - {{ ativo.nome_empresa }}</li>
     {% endfor %}
     </ul>
   </section>
+
 </body>
 
 {% endblock %}
