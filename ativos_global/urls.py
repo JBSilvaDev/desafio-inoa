@@ -1,7 +1,8 @@
 from django.urls import path
 
-from ativos_global.views import index
+from ativos_global.views import *
+
 
 urlpatterns = [
-  path('', index)
+  path('', index),
 ]

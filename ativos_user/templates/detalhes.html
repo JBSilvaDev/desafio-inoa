@@ -12,7 +12,7 @@ Favoritos Page
   </p>
   <Botao>Botao para remover favorito / Botao para adicionar ou remover da carteira</p>
   <p>
-    Página de favoritos, exibe apenas ativos salvos pelo usuario
+    Página de detalhes do ativo clicado
   </p>
   <form method="get" action="">
     <input type="text" name="cod-ativo" placeholder="Buscar ativo...">
@@ -20,11 +20,9 @@ Favoritos Page
   </form>
   <section class="ativos-list">
     <ul>
-    {% for ativo in ativos %}
-      <a href="{% url 'detalhes_ativos' ativo.id %}">
-        <li>{{ ativo.cod_ativo }} - {{ ativo.nome_empresa }}</li>
-      </a>
-    {% endfor %}
+      <ul>
+        <li>{{ ativo.id }} {{ ativo.cod_ativo }} - {{ ativo.nome_empresa }}</li>
+      </ul>
     </ul>
   </section>
 
