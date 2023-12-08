@@ -1,5 +1,5 @@
-from django.http import HttpResponse
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 
 from ativos_global.models import AtivosList
 from ativos_user.models import AtivosUser
@@ -14,5 +14,5 @@ def index(request):
   return render(request, 'index.html', {'ativos':ativos})
 
 def detalhes_ativos(request, id):
-  ativo = AtivosUser.objects.get(id=id)
+  ativo = get_object_or_404(AtivosList,id=id)
   return render(request, 'detalhes.html', {'ativo':ativo})
