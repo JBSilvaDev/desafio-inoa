@@ -23,9 +23,9 @@ Home Page
     <section class="ativos-list">
       <ul>
       {% for ativo in ativos %}
-        <a href="#">
-          <li>{{ ativo.cod_ativo }}</li>
-        </a>
+        <!-- <a href="#"> -->
+          <li>{{ ativo.cod_ativo }} - {{ ativo.empresa_nome }} </li>
+        <!-- </a> -->
       {% endfor %}
       </ul>
     </section>

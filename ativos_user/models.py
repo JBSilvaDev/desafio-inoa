@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -15,7 +16,7 @@ from django.db import models
     
 
 class AtivosUser(models.Model):
-    user_id = models.IntegerField()
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     codigo_ativo = models.CharField(max_length=5, )
     nome_empresa = models.CharField(max_length=100)
     favorito = models.BooleanField()
