@@ -11,20 +11,16 @@ Detalhes Page
     Barra de navegação - Favoritos/login/cadastro/logout
   </p>
   <Botao>Botao para remover favorito / Botao para adicionar ou remover da carteira</p>
-  <p>
-    Página de detalhes do ativo clicado
-  </p>
-  <form method="get" action="">
-    <input type="text" name="cod-ativo" placeholder="Buscar ativo...">
-    <input type="submit" value="Buscar">
-  </form>
-  <section class="ativos-list">
-    <ul>
+    <p>
+      Página de detalhes do ativo clicado
+    </p>
+    <section class="ativos-list">
       <ul>
-        <li>{{ ativo.id }} {{ ativo.cod_ativo }} - {{ ativo.nome_empresa }}</li>
+        <li>{{ ativo.id }}</li>
+        <li>{{ ativo.cod_ativo }}</li>
+        <li>{{ ativo.nome_empresa }}</li>
       </ul>
-    </ul>
-  </section>
+    </section>
 
 
 </body>
