@@ -1,14 +1,27 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/css_1.css' %}">
+  {% block head %}
+  {% endblock %}
   <title>{% block titulo %}{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-{% block body %}
-{% endblock %}
-
+<body>
+  <div class="header">
+    <div class="logo">Monitor de Ativos</div>
+    <ul class="menu">
+      <li><a href="{% url 'login' %}">Entrar</a></li>
+      <li><a href="{% url 'cadastro' %}">Cadastrar</a></li>
+      <li><a href="{% url 'favoritos' %}">Favoritos</a></li>
+      <li><a href="#">Sair</a></li>
+    </ul>
+  </div>
+  {% block body %}
+  {% endblock %}
+</body>
 </html>
+
+

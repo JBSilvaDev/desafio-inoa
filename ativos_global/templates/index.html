@@ -16,19 +16,20 @@ Home Page
       Página de boas vindas e exibição global de ativos<br>
       dados baixados em: <a href="https://www.dadosdemercado.com.br/bolsa/acoes", target="_blank">Acões listadas</a>
     </p>
-    <form method="get" action="">
-      <input type="text" name="cod-ativo" placeholder="Buscar ativo...">
-      <input type="submit" value="Buscar">
-    </form>
-    <section class="ativos-list">
+    <div class="sidebar">
+      <form method="get" action="">
+        <input type="text" name="cod-ativo" placeholder="Buscar ativo...">
+        <input type="submit" value="Buscar">
+      </form>
+      <br>
       <ul>
-      {% for ativo in ativos %}
+        {% for ativo in ativos %}
         <a href="{% url 'detalhes_ativos' ativo.id %}">
           <li>{{ ativo.cod_ativo }} - {{ ativo.nome_empresa }} </li>
         </a>
       {% endfor %}
       </ul>
-    </section>
+    </div>
   </section>
   
 </body>
