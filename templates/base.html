@@ -11,12 +11,14 @@
 </head>
 <body>
   <div class="header">
-    <div class="logo">Monitor de Ativos</div>
+    <a href="{% url 'index' %}">
+      <div class="logo">Monitor de Ativos</div>
+    </a>
     <ul class="menu">
       <li><a href="{% url 'login' %}">Entrar</a></li>
       <li><a href="{% url 'cadastro' %}">Cadastrar</a></li>
       <li><a href="{% url 'favoritos' %}">Favoritos</a></li>
-      <li><a href="#">Sair</a></li>
+      <li><a href="{% url 'sair' %}">Sair</a></li>
     </ul>
   </div>
   {% block body %}

@@ -4,5 +4,5 @@ from ativos_global.views import *
 
 
 urlpatterns = [
-  path('', index),
+  path('', index, name='index'),
 ]
