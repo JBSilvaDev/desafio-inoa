@@ -14,11 +14,17 @@ Página de login
   <br><br>
   <form class="form" action="" method="POST">
     {% csrf_token %}
-    <label for="nome">Nome</label>
-    <input type="nome" id="nome" name="nome" placeholder="jbsilva" />
-    <label for="senha">Senha</label>
-    <input type="password" id="senha" name="senha" placeholder="123123" />
-    <button type="submit">Entrar</button>
+    <div>
+      <p>
+        <label for="nome">Nome</label>
+        <input type="nome" id="nome" name="nome" placeholder="jbsilva" />
+      </p>
+    </div>
+    <p>
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" name="senha" placeholder="123123" />
+      
+    </p><button type="submit">Entrar</button>
   </form>
 </div>
 {% endblock %}

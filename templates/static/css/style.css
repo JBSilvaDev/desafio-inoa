@@ -40,6 +40,11 @@ table th {
 }
 
 form {
+  display: grid;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.buscar {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
@@ -72,3 +77,11 @@ input[type="submit"] {
   background-color: #363535;
   color: #ffffff;
 }
+
+input[type="checkbox"] {
+  background: none;
+  box-shadow: none;
+  width: min-content;
+  align-content: center;
+}
+
