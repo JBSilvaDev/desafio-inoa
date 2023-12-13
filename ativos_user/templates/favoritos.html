@@ -41,10 +41,10 @@ Favoritos Page
             </td>
             <td>{{ ativo.nome_empresa }}</td>
             <td style="text-align: center;">
-              <input type="checkbox" name="suaEscolha" value="" {% if ativo.favorito %} checked {% endif %}>
+              <input type="checkbox" name="suaEscolha" value="" {% if ativo.favorito %} checked {% endif %} disabled>
           </td>
           <td style="text-align: center;">
-              <input type="checkbox" name="suaEscolha" value="" {% if ativo.em_carteira %} checked {% endif %}>
+              <input type="checkbox" name="suaEscolha" value="" {% if ativo.em_carteira %} checked {% endif %} disabled>
           </td>
           </tr>
           {% endfor %}

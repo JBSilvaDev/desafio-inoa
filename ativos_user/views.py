@@ -15,3 +15,7 @@ def favoritos(request):
     ativos = AtivosUser.objects.all().filter(user_id = user_id)
   return render(request, 'favoritos.html', {'ativos':ativos})
 
+def update(request):
+  
+  pass
+
