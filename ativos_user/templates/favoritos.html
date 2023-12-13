@@ -36,7 +36,7 @@ Favoritos Page
           {% for ativo in ativos %}
           <tr>
             <td>
-              <a href="{% url 'detalhes_ativos' ativo.id %}">
+              <a href="{% url 'detalhes_ativos' ativo.id_ativo_list %}">
                 {{ ativo.cod_ativo }}</a>
             </td>
             <td>{{ ativo.nome_empresa }}</td>

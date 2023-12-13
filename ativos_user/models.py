@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 class AtivosUser(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    id_ativo_list = models.IntegerField()
     cod_ativo = models.CharField(max_length=5, )
     nome_empresa = models.CharField(max_length=100)
     favorito = models.BooleanField()

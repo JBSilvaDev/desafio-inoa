@@ -20,9 +20,10 @@ Detalhes Page
         <li>{{ ativo.cod_ativo }}</li>
         <li>{{ ativo.nome_empresa }}</li>
       </ul>
+      <br>
+      <a href="{% url 'remove_favorito' ativo.id %}"><button>FAVORITO</button></a>
+      <a href="{% url 'update_carteira' ativo.id %}"><button>CARTEIRA</button></a>
     </section>
-
-
 </body>
 
 {% endblock %}
