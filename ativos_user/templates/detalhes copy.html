@@ -21,14 +21,14 @@ Detalhes Page
         <li>{{ ativo.nome_empresa }}</li>
       </ul>
       <br>
-      <form method="POST" action="{% url 'detalhes_ativos' ativo.id %}">
-        {% csrf_token %}
-        <button type="submit" name="+f">+FAVORITO</button>
-        <button type="submit" name="-f">-FAVORITO</button>
-        <button type="submit" name="+c">+CARTEIRA</button>
-        <button type="submit" name="-c">-CARTEIRA</button>
-      </form>
-        
+      <a href="{% url 'favoritos_carteira' ativo.id '+f' %}">
+        <button>FAVORITO+</button></a>        
+      <a href="{% url 'favoritos_carteira' ativo.id '+c' %}">
+        <button>CARTEIRA+</button></a>
+      <a href="{% url 'favoritos_carteira' ativo.id '-f' %}">
+        <button>FAVORITO-</button></a>
+      <a href="{% url 'favoritos_carteira' ativo.id '-c' %}">
+        <button>CARTEIRA-</button></a>
     </section>
 </body>
 
