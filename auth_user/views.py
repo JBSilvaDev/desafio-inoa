@@ -40,4 +40,4 @@ def sair(request):
     if not request.user.is_authenticated:
         return redirect("login")
     auth.logout(request)
-    return redirect("favoritos")
+    return redirect("index")

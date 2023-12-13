@@ -12,19 +12,19 @@ Página de login
     <p>Faça login para acessar mais recursos</p>
   </center>
   <br><br>
-  <form class="form" action="" method="POST">
+  <form class="form-group" action="" method="POST">
     {% csrf_token %}
-    <div>
-      <p>
-        <label for="nome">Nome</label>
-        <input type="nome" id="nome" name="nome" placeholder="jbsilva" />
-      </p>
+    <div class="form-group">
+      <label for="nome">Nome</label>
+      <input class="form-control" type="nome" id="nome" name="nome" placeholder="jbsilva" />
     </div>
-    <p>
+    <div class="form-group">
       <label for="senha">Senha</label>
-      <input type="password" id="senha" name="senha" placeholder="123123" />
-      
-    </p><button type="submit">Entrar</button>
+      <input class="form-control" type="password" id="senha" name="senha" placeholder="123123" />
+
+    </div class="form-group">
+    <br>
+    <button class="btn btn-primary" type="submit">Entrar</button>
   </form>
 </div>
 {% endblock %}

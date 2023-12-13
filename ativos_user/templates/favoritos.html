@@ -17,19 +17,13 @@ Favoritos Page
         </p>
     </section>
     <section>
-      <aside>
-        <form class="buscar" method="get" action="">
-          <input type="text" name="cod-ativo" placeholder="Buscar ativo...">
-          <input type="submit" value="Buscar">
-        </form>
-      </aside>
-      <table>
+      <table class="table table-striped">
         <thead>
           <tr>
-            <th>Codigo</th>
-            <th>Nome</th>
-            <th>Favorito</th>
-            <th>Em Carteira</th>
+            <th scope="col">Codigo</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Favorito</th>
+            <th scope="col">Em Carteira</th>
           </tr>
         </thead>
         <tbody>
@@ -41,11 +35,15 @@ Favoritos Page
             </td>
             <td>{{ ativo.nome_empresa }}</td>
             <td style="text-align: center;">
-              <input type="checkbox" name="suaEscolha" value="" {% if ativo.favorito %} checked {% endif %} disabled>
-          </td>
-          <td style="text-align: center;">
-              <input type="checkbox" name="suaEscolha" value="" {% if ativo.em_carteira %} checked {% endif %} disabled>
-          </td>
+              <div>
+                <input class="form-check-input" type="checkbox" name="suaEscolha" value="" {% if ativo.favorito %} checked {% endif %} disabled>
+              </div>
+            </td>
+            <td style="text-align: center;">
+              <div>
+              <input class="form-check-input" type="checkbox" name="suaEscolha" value="" {% if ativo.em_carteira %} checked {% endif %} disabled>
+            </div>
+            </td>
           </tr>
           {% endfor %}
         </tbody>

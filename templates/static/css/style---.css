@@ -11,6 +11,10 @@ body {
   font-size: 1.6rem;
   line-height: 1.4;
   color: #404040;
+  /* background-image: url('../img/home.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 100; */
 }
 header {
   background-color: #f8f9fa;
