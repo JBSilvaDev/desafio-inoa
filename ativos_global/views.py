@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from ativos_global.models import AtivosList
 from ativos_user.models import AtivosUser
 
+import yfinance as yf
+import plotly.express as px
+
 
 # Create your views here.
 def index(request):
@@ -17,6 +20,9 @@ def index(request):
 
 def detalhes_ativos(request, id):
     ativo = get_object_or_404(AtivosList, id=id)
+    plot_grafico = yf.Ticker(f'{ativo.cod_ativo}.SA')
+    df = plot_grafico.history(period="1mo")
+    df = df.reset_index()
     user_id = request.user.id
     ativo_fc = AtivosUser.objects.filter(cod_ativo=ativo.cod_ativo).filter(
         user_id=user_id
@@ -57,5 +63,6 @@ def detalhes_ativos(request, id):
                 ativo_user.save()
             return render(request, "favoritos.html", {"ativos": ativos_favoritos})
 
-    
-    return render(request, "detalhes.html", {"ativo": ativo})
+    grafico = px.line(df, x='Date', y='Close', markers=True, title=f'<b>Dados de:</b> {ativo.cod_ativo}')
+    plot_div = grafico.to_html(full_html=True)
+    return render(request, "detalhes.html", {"ativo": ativo, 'plot_div':plot_div})
