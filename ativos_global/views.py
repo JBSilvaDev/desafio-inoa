@@ -57,4 +57,5 @@ def detalhes_ativos(request, id):
                 ativo_user.save()
             return render(request, "favoritos.html", {"ativos": ativos_favoritos})
 
+    
     return render(request, "detalhes.html", {"ativo": ativo})
