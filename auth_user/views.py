@@ -1,7 +1,10 @@
+from asyncio import constants
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib import auth
+from django.contrib import messages
+from django.contrib.messages import constants
 
 
 # Create your views here.
@@ -11,11 +14,18 @@ def cadastro(request):
         email = request.POST.get("email")
         senha = request.POST.get("senha")
         if User.objects.filter(username=nome).exists():
-            return HttpResponse("<h1> Usuario ja cadastrado </h1>")
+            messages.add_message(request, constants.WARNING, f'Usuário {nome} ja cadastrado, faça login, ou um novo cadastro')
+            return redirect('login')
         elif User.objects.filter(email=email).exists():
-            return HttpResponse("<h1> Email ja cadastrado </h1>")
+            messages.add_message(request, constants.WARNING, f'Usuário {email} ja cadastrado, faça login, ou um novo cadastro')
+            return redirect('login')
+        if len(nome.strip()) == 0 or len(email.strip()) == 0:
+            messages.add_message(request, constants.ERROR, 'Nome e E-mail não podem ser vazios')
+            return render(request, "cadastro.html")
         usuario = User.objects.create_user(username=nome, email=email, password=senha)
         usuario.save()
+        messages.add_message(request, constants.SUCCESS, f'Cadastro realizado com sucesso, {nome}, faça login para acesso total')
+        return redirect("login")
     return render(request, "cadastro.html")
 
 
@@ -30,9 +40,11 @@ def login(request):
         )
         if usuario is not None:
             auth.login(request, usuario)
+            messages.add_message(request, constants.SUCCESS, 'Login realizado com sucesso')
             return redirect("index")
         else:
-            return HttpResponse("<h1> Usuario ou senha invalidos </h1>")
+            messages.add_message(request, constants.WARNING, 'Usuário ou senha invalidos, faça cadastro caso nao tenha conta registrada')
+            return redirect('cadastro')
     return render(request, "login.html")
 
 

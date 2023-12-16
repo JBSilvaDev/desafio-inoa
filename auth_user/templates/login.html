@@ -6,6 +6,11 @@ Página de login
 {% endblock %}
 {% block body %}
 <div class="container">
+  {% if messages %}
+    {% for i in messages %}
+      <div class="{{i.tags}}">{{i}}</div>
+    {% endfor %}
+  {% endif %}
   <br><br>
   <center>
     <h1>Login</h1>

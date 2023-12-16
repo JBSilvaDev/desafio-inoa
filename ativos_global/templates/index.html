@@ -6,6 +6,11 @@ Home Page
 {% block body %}
 
 <body>
+  {% if messages %}
+    {% for i in messages %}
+      <div class="{{i.tags}}">{{i}}</div>
+    {% endfor %}
+  {% endif %}
   <h2>Monitoramento de ativos de B3</h2>
   <main>
 

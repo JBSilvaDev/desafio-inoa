@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from uu import Error
+from django.contrib.messages import constants
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -131,3 +133,14 @@ STATICFILES_DIRS = (
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Django Message
+
+MESSAGE_TAGS = {
+  constants.DEBUG: 'alert alert-primary',
+  constants.ERROR: 'alert alert-danger',
+  constants.SUCCESS: 'alert alert-success',
+  constants.INFO: 'alert alert-info',
+  constants.WARNING:'alert alert-warning'
+
+}
