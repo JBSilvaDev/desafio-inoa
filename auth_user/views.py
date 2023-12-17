@@ -9,6 +9,8 @@ from django.contrib.messages import constants
 
 # Create your views here.
 def cadastro(request):
+    if request.user.is_authenticated:
+        return redirect('index')
     if request.method == "POST":
         nome = request.POST.get("nome")
         email = request.POST.get("email")
@@ -30,6 +32,8 @@ def cadastro(request):
 
 
 def login(request):
+    if request.user.is_authenticated:
+        return redirect('index')
     if request.method == "POST":
         nome = request.POST.get("nome")
         senha = request.POST.get("senha")
