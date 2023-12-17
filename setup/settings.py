@@ -144,3 +144,5 @@ MESSAGE_TAGS = {
   constants.WARNING:'alert alert-warning'
 
 }
+
+#AUTH_USER_MODEL = auth_user.Users

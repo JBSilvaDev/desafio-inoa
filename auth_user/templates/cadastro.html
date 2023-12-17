@@ -18,20 +18,18 @@ Página de cadastro
   </center>
   <hr>
   <br><br>
-  <form class="form-group" action="" method="POST">
+  <form action="" method="POST">
     {% csrf_token %}
-    <div class="form-group">
-      <label for="name">Nome</label>
-      <input class="form-control" type="text" id="name" name="nome" placeholder="Nome..." />
-    </div>
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input class="form-control" type="email" id="email" name="email" placeholder="jbsilva@email.com" />
-    </div>
-    <div class="form-group">
-      <label for="password">Senha</label>
-      <input class="form-control" type="password" id="password" name="senha" placeholder="123123" />
-    </div>
+   
+      <label>Nome</label>
+      <input class="form-control" type="text" name="nome" placeholder="Nome..." />
+<br>
+      <label>Email</label>
+      <input class="form-control" type="email" name="email" placeholder="jbsilva@email.com" />
+<br>
+      <label>Senha</label>
+      <input class="form-control" type="password" name="senha" placeholder="123123" />
+
     <br>
     <button class="btn btn-primary" type="submit">Cadastrar</button>
   </form>
