@@ -16,12 +16,13 @@ Página de login
     <h1>Login</h1>
     <p>Faça login para acessar mais recursos</p>
   </center>
+  <hr>
   <br><br>
   <form class="form-group" action="" method="POST">
     {% csrf_token %}
     <div class="form-group">
       <label for="nome">Nome</label>
-      <input class="form-control" type="nome" id="nome" name="nome" placeholder="jbsilva" />
+      <input class="form-control" type="text" id="nome" name="nome" placeholder="jbsilva" />
     </div>
     <div class="form-group">
       <label for="senha">Senha</label>
