@@ -10,4 +10,5 @@ urlpatterns = [
     path('auth/', include('auth_user.urls')),
     path('favoritos/', include('ativos_user.urls'), name='favoritos'),
     path('detalhes/<int:id>', detalhes_ativos, name='detalhes_ativos'),
+    path('update_data/<int:id>/', update_data, name='update_data'),
 ]

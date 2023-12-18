@@ -29,9 +29,58 @@ Detalhes Page
         <button type="submit" name="-c">-CARTEIRA</button>
       </form>
     </section>
-    <section>
+    <!-- <section>
       {{ plot_div|safe }}
-    </section>
+    </section> -->
+
+    <div id="plot"></div>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    
+
+    <script>
+      function updateChart() {
+          $.ajax({
+              url: '{% url "update_data" id=ativo.id %}',
+              type: 'GET',
+              dataType: 'json',
+              success: function(data) {
+    console.log(data);
+
+    const xData = data.x.map(dateString => new Date(dateString));
+
+    Plotly.newPlot('plot', [{
+        x: xData,
+        y: data.y,
+        type: 'line',
+        markers: {color: 'blue'},
+        name: data.title,
+    }], {
+        annotations: data.y.map((value, index) => ({
+            x: xData[index],
+            y: value,
+            xref: 'x',
+            yref: 'y',
+            text: value.toFixed(2),
+            showarrow: false,
+            arrowhead: 4,
+            ax: 0,
+            ay: -30,
+        })),
+    });
+
+    setTimeout(updateChart, 10000);
+}
+
+          });
+      }
+  
+      $(document).ready(function() {
+          updateChart();
+      });
+  </script>
+  
 </body>
 
 {% endblock %}
