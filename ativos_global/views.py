@@ -35,16 +35,24 @@ def detalhes_ativos(request, id):
         }
         return JsonResponse(data)
     
+    lasts = {
+        "fechamento":f'{df['Close'].tolist()[-1]:.2f}', 
+        "volume":f'{df['Volume'].tolist()[-1]}',
+    }
     user_id = request.user.id
-    ativo_fc = AtivosUser.objects.filter(cod_ativo=ativo.cod_ativo).filter(
-        user_id=user_id
-    )
-    ativos_favoritos = AtivosUser.objects.all().filter(user_id=user_id)
+    ativo_fc = AtivosUser.objects.filter(cod_ativo=ativo.cod_ativo, user_id=user_id).first()
+
+    if ativo_fc:
+        variacao_percent_valor = ativo_fc.variacao_percent
+        lasts['variacao'] = f'{variacao_percent_valor/100:.1%}'
+    else:
+        lasts['variacao'] = f'{0:.1%}'
+
 
     grafico = px.line(df, x='Datetime', y='Close', markers=True, title=f'<b>Dados de:</b> {ativo.cod_ativo}')
     grafico.update_traces(textposition='top center', textfont_size=10)
     plot_div = grafico.to_html(full_html=True)
-    return render(request, "detalhes.html", {"ativo": ativo, 'plot_div': plot_div})
+    return render(request, "detalhes.html", {"ativo": ativo, "lasts":lasts})
 
 
 from django.http import JsonResponse
@@ -53,10 +61,9 @@ from django.http import JsonResponse
 def update_data(request, id):
     ativo = get_object_or_404(AtivosList, id=id)
     plot_grafico = yf.Ticker(f'{ativo.cod_ativo}.SA')
-    df = plot_grafico.history(period="1d", interval='5m')
+    df = plot_grafico.history(period="1d", interval='15m')
     df = df.reset_index()
 
-    print(df['Close'].tolist()[-1])
     data = {
         'x': df['Datetime'].tolist(),
         'y': df['Close'].tolist(),

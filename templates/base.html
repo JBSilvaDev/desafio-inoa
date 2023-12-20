@@ -25,6 +25,7 @@
           <li class="nav-item"><a class="nav-link active" href="{% url 'sair' %}"><button class="btn btn-danger">Sair</button></a></li>
           {% endif %}
         </ul>
+        {% if not 'detalhes' in request.path %}
         <aside>
           <form class="form-inline" method="GET" action="">
             <div class="row">
@@ -33,6 +34,7 @@
             </div>
           </form>
         </aside>
+        {% endif %}
       </nav>
     </header>
   {% block body %}

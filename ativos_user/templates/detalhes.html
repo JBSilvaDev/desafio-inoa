@@ -5,33 +5,43 @@ Detalhes Page
 {% endblock %}
 {% block body %}
 
-
 <body>
-  <p>
-    Barra de navegação - Favoritos/login/cadastro/logout
-  </p>
-  <Botao>Botao para remover favorito / Botao para adicionar ou remover da carteira</p>
-    <p>
-      Página de detalhes do ativo clicado
-    </p>
+  <div class="container mt-4">
+    <h1>Detalhamento de {{ ativo.nome_empresa }}</h1>
+
     <section class="ativos-list">
-      <ul>
-        <li>{{ ativo.id }}</li>
-        <li>{{ ativo.cod_ativo }}</li>
-        <li>{{ ativo.nome_empresa }}</li>
-      </ul>
-      <br>
-      <form method="POST" action="{% url 'detalhes_ativos' ativo.id %}">
-        {% csrf_token %}
-        <button type="submit" name="+f">+FAVORITO</button>
-        <button type="submit" name="-f">-FAVORITO</button>
-        <button type="submit" name="+c">+CARTEIRA</button>
-        <button type="submit" name="-c">-CARTEIRA</button>
-      </form>
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Cod Ativo</th>
+                    <th scope="col">Empresa</th>
+                    <th scope="col">Valor</th>
+                    <th scope="col">Volume</th>
+                    <th scope="col">Variação Esperada</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ ativo.cod_ativo }}</td>
+                    <td>{{ ativo.nome_empresa }}</td>
+                    <td>R$ {{ lasts.fechamento }}</td>
+                    <td>{{ lasts.volume }}</td>
+                    <td>{{ lasts.variacao }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <form method="POST" action="{% url 'detalhes_ativos' ativo.id %}">
+            {% csrf_token %}
+            <div class="btn-group" role="group">
+                <button type="submit" class="btn btn-success" name="+f">+FAVORITO</button>
+                <button type="submit" class="btn btn-danger" name="-f">-FAVORITO</button>
+                <button type="submit" class="btn btn-success" name="+c">+CARTEIRA</button>
+                <button type="submit" class="btn btn-danger" name="-c">-CARTEIRA</button>
+            </div>
+        </form>
     </section>
-    <!-- <section>
-      {{ plot_div|safe }}
-    </section> -->
+</div>
 
     <div id="plot"></div>
 
