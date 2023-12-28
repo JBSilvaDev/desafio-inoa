@@ -31,7 +31,7 @@ Detalhes Page
             </tbody>
         </table>
 
-        <form method="POST" action="{% url 'detalhes_ativos' ativo.id %}">
+        <form method="POST" action="{% url 'update_wallet' ativo.id %}">
             {% csrf_token %}
             <div class="btn-group" role="group">
                 <button type="submit" class="btn btn-success" name="+f">+FAVORITO</button>

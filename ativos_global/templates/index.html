@@ -11,31 +11,72 @@ Home Page
       <div class="{{i.tags}}">{{i}}</div>
     {% endfor %}
   {% endif %}
-  <h2>Monitoramento de ativos de B3</h2>
-  <main>
-
-    <section style="height: 85vh; overflow-y: auto;">
-
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Codigo</th>
-            <th scope="col">Nome</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ativo in ativos %}
-          <tr>
-            <td>
-              <a href="{% url 'detalhes_ativos' ativo.id %}">
-                {{ ativo.cod_ativo }}</a>
-            </td>
-            <td>{{ ativo.nome_empresa }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <section class="best-receipe-area">
+    <div class="container">
+        <h2>Monitoramento de ativos de B3</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Codigo</th>
+              <th scope="col">Nome</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ativo in ativos %}
+            <tr>
+              <td>
+                <a href="{% url 'detalhes_ativos' ativo.id %}">
+                  {{ ativo.cod_ativo }}</a>
+              </td>
+              <td>{{ ativo.nome_empresa }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </section>
-  </main>
+    <!-- Paginação config -->
+    <div class="container">
+      {% if ativos.has_other_pages %}
+      <ul class="pagination">
+          {% if ativos.has_previous %}
+          <li class="page-item">
+              <a href="?page={{ ativos.previous_page_number }}" class="page-link">«</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+              <a class="page-link">«</a>
+          </li>
+          {% endif %}
+  
+          {% with start_page=ativos.number|add:'-5' end_page=ativos.number|add:'5' %}
+          {% for pagina in ativos.paginator.page_range %}
+          {% if pagina >= start_page and pagina <= end_page %}
+          {% if ativos.number == pagina %}
+          <li class="page-item active">
+              <a class="page-link">{{ pagina }}</a>
+          </li>
+          {% else %}
+          <li class="page-item">
+              <a href="?page={{pagina}}" class="page-link">{{pagina}}</a>
+          </li>
+          {% endif %}
+          {% endif %}
+          {% endfor %}
+          {% endwith %}
+  
+          {% if ativos.has_next %}
+          <li class="page-item">
+              <a href="?page={{ativos.next_page_number}}" class="page-link">»</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+              <a class="page-link">»</a>
+          </li>
+          {% endif %}
+      </ul>
+      {% endif %}
+  </div>
+  
 </body>
 {% endblock %}

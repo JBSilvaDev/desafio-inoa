@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
 from ativos_global.models import AtivosList
 from ativos_user.models import AtivosUser
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import yfinance as yf
 import plotly.express as px
-
+from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 # Create your views here.
 def index(request):
@@ -16,10 +16,11 @@ def index(request):
         ativos = AtivosList.objects.filter(cod_ativo__icontains=busca)
     else:
         ativos = AtivosList.objects.all()
-    return render(request, "index.html", {"ativos": ativos})
+    paginacao = Paginator(ativos, 15)
+    page = request.GET.get('page')
+    ativos_por_pagina = paginacao.get_page(page)
+    return render(request, "index.html", {"ativos": ativos_por_pagina})
 
-
-from django.http import JsonResponse
 
 def detalhes_ativos(request, id):
     ativo = get_object_or_404(AtivosList, id=id)
@@ -54,8 +55,6 @@ def detalhes_ativos(request, id):
     plot_div = grafico.to_html(full_html=True)
     return render(request, "detalhes.html", {"ativo": ativo, "lasts":lasts})
 
-
-from django.http import JsonResponse
 
 @csrf_exempt
 def update_data(request, id):

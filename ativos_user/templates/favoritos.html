@@ -6,7 +6,6 @@ Favoritos Page
 {% block body %}
 
 <body>
-  <main>
     <section>
       <p>
         Barra de navegação - Favoritos/login/cadastro/logout
@@ -16,41 +15,83 @@ Favoritos Page
           Página de favoritos, exibe apenas ativos salvos pelo usuario
         </p>
     </section>
-    <section>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Codigo</th>
-            <th scope="col">Nome</th>
-            <th scope="col">Favorito</th>
-            <th scope="col">Em Carteira</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ativo in ativos %}
-          <tr>
-            <td>
-              <a href="{% url 'detalhes_ativos' ativo.id_ativo_list %}">
-                {{ ativo.cod_ativo }}</a>
-            </td>
-            <td>{{ ativo.nome_empresa }}</td>
-            <td style="text-align: center;">
-              <div>
-                <input class="form-check-input" type="checkbox" name="suaEscolha" value="" {% if ativo.favorito %} checked {% endif %} disabled>
+    <section class="best-receipe-area">
+      <div class="container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Codigo</th>
+              <th scope="col">Nome</th>
+              <th scope="col">Favorito</th>
+              <th scope="col">Em Carteira</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ativo in ativos %}
+            <tr>
+              <td>
+                <a href="{% url 'detalhes_ativos' ativo.id_ativo_list %}">
+                  {{ ativo.cod_ativo }}</a>
+              </td>
+              <td>{{ ativo.nome_empresa }}</td>
+              <td style="text-align: center;">
+                <div>
+                  <input class="form-check-input" type="checkbox" name="suaEscolha" value="" {% if ativo.favorito %} checked {% endif %} disabled>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <div>
+                <input class="form-check-input" type="checkbox" name="suaEscolha" value="" {% if ativo.em_carteira %} checked {% endif %} disabled>
               </div>
-            </td>
-            <td style="text-align: center;">
-              <div>
-              <input class="form-check-input" type="checkbox" name="suaEscolha" value="" {% if ativo.em_carteira %} checked {% endif %} disabled>
-            </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </section>
-
-  </main>
+    <!-- Paginação -->
+    <div class="container">
+      {% if ativos.has_other_pages %}
+      <ul class="pagination">
+          {% if ativos.has_previous %}
+          <li class="page-item">
+              <a href="?page={{ ativos.previous_page_number }}" class="page-link">«</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+              <a class="page-link">«</a>
+          </li>
+          {% endif %}
+  
+          {% with start_page=ativos.number|add:'-5' end_page=ativos.number|add:'5' %}
+          {% for pagina in ativos.paginator.page_range %}
+          {% if pagina >= start_page and pagina <= end_page %}
+          {% if ativos.number == pagina %}
+          <li class="page-item active">
+              <a class="page-link">{{ pagina }}</a>
+          </li>
+          {% else %}
+          <li class="page-item">
+              <a href="?page={{pagina}}" class="page-link">{{pagina}}</a>
+          </li>
+          {% endif %}
+          {% endif %}
+          {% endfor %}
+          {% endwith %}
+  
+          {% if ativos.has_next %}
+          <li class="page-item">
+              <a href="?page={{ativos.next_page_number}}" class="page-link">»</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+              <a class="page-link">»</a>
+          </li>
+          {% endif %}
+      </ul>
+      {% endif %}
+  </div>
 
 </body>
 

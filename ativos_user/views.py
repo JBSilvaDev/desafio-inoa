@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from ativos_user.models import AtivosUser
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 
 # Create your views here.
@@ -14,7 +15,9 @@ def favoritos(request):
     ativos = AtivosUser.objects.filter(cod_ativo__icontains = busca).filter(user_id = user_id)
   else:
     ativos = AtivosUser.objects.all().filter(user_id = user_id)
-
-  return render(request, 'favoritos.html', {'ativos':ativos})
+  paginacao = Paginator(ativos, 10)
+  page = request.GET.get('page')
+  ativos_por_pagina = paginacao.get_page(page)
+  return render(request, 'favoritos.html', {'ativos':ativos_por_pagina})
 
 
