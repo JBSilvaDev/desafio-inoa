@@ -5,6 +5,7 @@ from ativos_user.models import AtivosUser
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import yfinance as yf
+from django.db.models import Q
 import plotly.express as px
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -13,7 +14,7 @@ from django.http import JsonResponse
 def index(request):
     busca = request.GET.get("cod-ativo")
     if busca:
-        ativos = AtivosList.objects.filter(cod_ativo__icontains=busca)
+        ativos = AtivosList.objects.filter(Q(cod_ativo__icontains=busca) | Q(nome_empresa__icontains=busca))
     else:
         ativos = AtivosList.objects.all()
     paginacao = Paginator(ativos, 15)
