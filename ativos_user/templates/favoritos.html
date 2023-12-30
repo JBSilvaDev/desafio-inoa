@@ -24,6 +24,7 @@ Favoritos Page
               <th scope="col">Nome</th>
               <th scope="col">Favorito</th>
               <th scope="col">Em Carteira</th>
+              <th scope="col">Variacao</th>
             </tr>
           </thead>
           <tbody>
@@ -41,8 +42,9 @@ Favoritos Page
               </td>
               <td style="text-align: center;">
                 <div>
-                <input class="form-check-input" type="checkbox" name="suaEscolha" value="" {% if ativo.em_carteira %} checked {% endif %} disabled>
-              </div>
+                  <input class="form-check-input" type="checkbox" name="suaEscolha" value="" {% if ativo.em_carteira %} checked {% endif %} disabled>
+                </div>
+                <td>{{ ativo.variacao_percent }}</td>
               </td>
             </tr>
             {% endfor %}
