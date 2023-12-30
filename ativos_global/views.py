@@ -53,7 +53,7 @@ def detalhes_ativos(request, id):
 
     grafico = px.line(df, x='Datetime', y='Close', markers=True, title=f'<b>Dados de:</b> {ativo.cod_ativo}')
     grafico.update_traces(textposition='top center', textfont_size=10)
-    plot_div = grafico.to_html(full_html=True)
+    # plot_div = grafico.to_html(full_html=True)
     return render(request, "detalhes.html", {"ativo": ativo, "lasts":lasts})
 
 

@@ -6,91 +6,90 @@ Detalhes Page
 {% block body %}
 
 <body>
-  <div class="container mt-4">
-    <h1>Detalhamento de {{ ativo.nome_empresa }}</h1>
+    <div class="container mt-4">
+        <h1>Detalhamento de {{ ativo.nome_empresa }}</h1>
 
-    <section class="ativos-list">
-        <table class="table">
-            <thead class="thead-light">
-                <tr>
-                    <th scope="col">Cod Ativo</th>
-                    <th scope="col">Empresa</th>
-                    <th scope="col">Valor</th>
-                    <th scope="col">Volume</th>
-                    <th scope="col">Variação Esperada</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ ativo.cod_ativo }}</td>
-                    <td>{{ ativo.nome_empresa }}</td>
-                    <td>R$ {{ lasts.fechamento }}</td>
-                    <td>{{ lasts.volume }}</td>
-                    <td>{{ lasts.variacao }}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <form method="POST" action="{% url 'update_wallet' ativo.id %}">
-            {% csrf_token %}
-            <div class="btn-group" role="group">
-                <button type="submit" class="btn btn-success" name="+f">+FAVORITO</button>
-                <button type="submit" class="btn btn-danger" name="-f">-FAVORITO</button>
-                <button type="submit" class="btn btn-success" name="+c">+CARTEIRA</button>
-                <button type="submit" class="btn btn-danger" name="-c">-CARTEIRA</button>
-            </div>
-        </form>
-    </section>
-</div>
+        <section class="ativos-list">
+            <table class="table">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">Cod Ativo</th>
+                        <th scope="col">Empresa</th>
+                        <th scope="col">Valor</th>
+                        <th scope="col">Volume</th>
+                        <th scope="col">Variação Esperada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ ativo.cod_ativo }}</td>
+                        <td>{{ ativo.nome_empresa }}</td>
+                        <td>R$ {{ lasts.fechamento }}</td>
+                        <td>{{ lasts.volume }}</td>
+                        <td>{{ lasts.variacao }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'update_wallet' ativo.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm" name="+f">+FAVORITO</button>
+                <button type="submit" class="btn btn-danger btn-sm" name="-f">-FAVORITO</button>
+                <button type="submit" class="btn btn-success btn-sm" name="+c">+CARTEIRA</button>
+                <button type="submit" class="btn btn-danger btn-sm" name="-c">-CARTEIRA</button>
+            </form>
+            {% endif %}
+        </section>
+    </div>
 
     <div id="plot"></div>
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    
+
 
     <script>
-      function updateChart() {
-          $.ajax({
-              url: '{% url "update_data" id=ativo.id %}',
-              type: 'GET',
-              dataType: 'json',
-              success: function(data) {
-    console.log(data);
+        function updateChart() {
+            $.ajax({
+                url: '{% url "update_data" id=ativo.id %}',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
 
-    const xData = data.x.map(dateString => new Date(dateString));
+                    const xData = data.x.map(dateString => new Date(dateString));
 
-    Plotly.newPlot('plot', [{
-        x: xData,
-        y: data.y,
-        type: 'line',
-        markers: {color: 'blue'},
-        name: data.title,
-    }], {
-        annotations: data.y.map((value, index) => ({
-            x: xData[index],
-            y: value,
-            xref: 'x',
-            yref: 'y',
-            text: value.toFixed(2),
-            showarrow: false,
-            arrowhead: 4,
-            ax: 0,
-            ay: -30,
-        })),
-    });
+                    Plotly.newPlot('plot', [{
+                        x: xData,
+                        y: data.y,
+                        type: 'line',
+                        markers: { color: 'blue' },
+                        name: data.title,
+                    }], {
+                        annotations: data.y.map((value, index) => ({
+                            x: xData[index],
+                            y: value,
+                            xref: 'x',
+                            yref: 'y',
+                            text: value.toFixed(2),
+                            showarrow: false,
+                            arrowhead: 4,
+                            ax: 0,
+                            ay: -30,
+                        })),
+                    });
 
-    setTimeout(updateChart, 10000);
-}
+                    setTimeout(updateChart, 10000);
+                }
 
-          });
-      }
-  
-      $(document).ready(function() {
-          updateChart();
-      });
-  </script>
-  
+            });
+        }
+
+        $(document).ready(function () {
+            updateChart();
+        });
+    </script>
+
 </body>
 
 {% endblock %}

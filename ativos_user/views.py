@@ -19,6 +19,6 @@ def favoritos(request):
   paginacao = Paginator(ativos, 10)
   page = request.GET.get('page')
   ativos_por_pagina = paginacao.get_page(page)
-  return render(request, 'favoritos.html', {'ativos':ativos_por_pagina})
+  return render(request, 'favoritos.html', {'ativos':ativos_por_pagina, "favorito":True})
 
 
