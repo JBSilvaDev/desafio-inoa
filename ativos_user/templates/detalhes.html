@@ -31,9 +31,9 @@ Detalhes do Ativo
                 </tbody>
             </table>
             {% if user.is_authenticated %}
-            <form method="POST" action="{% url 'ativos_user:update_ativo_config' ativo_user.id %}"> {# Ação de update_wallet não existe mais, usar update_ativo_config #}
+            <form method="POST" action="{% url 'ativos_user:update_ativo_config' ativo_user.id %}">
                 {% csrf_token %}
-                {# A lógica de is_monitored não é mais relevante aqui, pois o ativo_user já existe #}
+                
                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#configModal-{{ ativo_user.id }}">
                     Configurar Monitoramento
                 </button>
@@ -85,24 +85,24 @@ Detalhes do Ativo
                     <form action="{% url 'ativos_user:update_ativo_config' ativo_user.id %}" method="post">
                         {% csrf_token %}
                         <div class="mb-3">
-                            {{ form.limite_superior.label_tag }} {# Alterado aqui #}
-                            {{ form.limite_superior }} {# Alterado aqui #}
+                            {{ form.limite_superior.label_tag }} 
+                            {{ form.limite_superior }} 
                         </div>
                         <div class="mb-3">
-                            {{ form.limite_inferior.label_tag }} {# Alterado aqui #}
-                            {{ form.limite_inferior }} {# Alterado aqui #}
+                            {{ form.limite_inferior.label_tag }} 
+                            {{ form.limite_inferior }} 
                         </div>
                         <div class="mb-3">
-                            {{ form.intervalo_verificacao.label_tag }} {# Alterado aqui #}
-                            {{ form.intervalo_verificacao }} {# Alterado aqui #}
+                            {{ form.intervalo_verificacao.label_tag }} 
+                            {{ form.intervalo_verificacao }} 
                         </div>
                         <div class="mb-3 form-check">
-                            {{ form.favorito }} {# Alterado aqui #}
-                            {{ form.favorito.label_tag }} {# Alterado aqui #}
+                            {{ form.favorito }} 
+                            {{ form.favorito.label_tag }} 
                         </div>
                         <div class="mb-3 form-check">
-                            {{ form.em_carteira }} {# Alterado aqui #}
-                            {{ form.em_carteira.label_tag }} {# Alterado aqui #}
+                            {{ form.em_carteira }} 
+                            {{ form.em_carteira.label_tag }} 
                         </div>
                         <button type="submit" class="btn btn-success">Salvar</button>
                     </form>

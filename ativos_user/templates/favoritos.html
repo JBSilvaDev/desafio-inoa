@@ -12,9 +12,9 @@
     </div>
 
     <div class="row mb-4">
-        <div class="col-md-12"> {# Ajustado para ocupar a largura total #}
+        <div class="col-md-12"> 
             <h3>Adicionar Ativo Manualmente</h3>
-            <form method="POST" action="{% url 'ativos_user:add_manual_asset' %}"> {# Usar namespace #}
+            <form method="POST" action="{% url 'ativos_user:add_manual_asset' %}">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="cod_ativo_manual" class="form-label">Código do Ativo (Ex: PETR4)</label>
@@ -35,7 +35,7 @@
                 <button type="submit" class="btn btn-primary">Adicionar Ativo</button>
             </form>
         </div>
-        {# Removido o botão "Buscar Mais Ativos" #}
+        
     </div>
 
     <div class="table-responsive">
@@ -44,7 +44,7 @@
                 <tr>
                     <th scope="col">Código</th>
                     <th scope="col">Empresa</th>
-                    <th scope="col" class="text-center">Favorito</th> {# Nova coluna #}
+                    <th scope="col" class="text-center">Favorito</th> 
                     <th scope="col" class="text-center">Em Carteira</th>
                     <th scope="col" class="text-center">Limite Superior (Venda)</th>
                     <th scope="col" class="text-center">Limite Inferior (Compra)</th>
@@ -56,10 +56,10 @@
                 {% for ativo in ativos %}
                 <tr>
                     <td>
-                        <a href="{% url 'ativos_user:detalhes_ativo' ativo.id %}">{{ ativo.ativo.cod_ativo }}</a> {# Adicionado o link para detalhes_ativo #}
+                        <a href="{% url 'ativos_user:detalhes_ativo' ativo.id %}">{{ ativo.ativo.cod_ativo }}</a>
                     </td>
                     <td>{{ ativo.ativo.nome_empresa }}</td>
-                    <td class="text-center"> {# Nova coluna #}
+                    <td class="text-center"> 
                         <input class="form-check-input" type="checkbox" {% if ativo.favorito %} checked {% endif %} disabled>
                     </td>
                     <td class="text-center">
@@ -84,7 +84,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form action="{% url 'ativos_user:update_ativo_config' ativo.id %}" method="post"> {# Usar namespace #}
+                                <form action="{% url 'ativos_user:update_ativo_config' ativo.id %}" method="post">
                                     {% csrf_token %}
                                     <div class="mb-3">
                                         {{ ativo.form.limite_superior.label_tag }}
@@ -98,11 +98,11 @@
                                         {{ ativo.form.intervalo_verificacao.label_tag }}
                                         {{ ativo.form.intervalo_verificacao }}
                                     </div>
-                                    <div class="mb-3 form-check"> {# Novo #}
+                                    <div class="mb-3 form-check"> 
                                         {{ ativo.form.favorito }}
                                         {{ ativo.form.favorito.label_tag }}
                                     </div>
-                                    <div class="mb-3 form-check"> {# Novo #}
+                                    <div class="mb-3 form-check"> 
                                         {{ ativo.form.em_carteira }}
                                         {{ ativo.form.em_carteira.label_tag }}
                                     </div>
@@ -114,7 +114,7 @@
                 </div>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="text-center">Você ainda não adicionou ativos para monitorar.</td> {# Colspan ajustado #}
+                    <td colspan="8" class="text-center">Você ainda não adicionou ativos para monitorar.</td>
                 </tr>
                 {% endfor %}
             </tbody>

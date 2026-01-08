@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/style.css' %}"> {# Incluir o CSS customizado #}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" /> {# Adicionar Font Awesome #}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   {% block head %}
   {% endblock %}
   <title>{% block titulo %}{% endblock %}</title>
@@ -18,21 +18,21 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           {% if not user.is_authenticated %}
           <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}"><button class="btn btn-primary">Login</button></a></li>
-          <li class="nav-item"><a class="nav-link active" href="{% url 'auth:cadastro' %}"><button class="btn btn-success">Cadastrar</button></a></li> {# Usar namespace 'auth' #}
+          <li class="nav-item"><a class="nav-link active" href="{% url 'auth:cadastro' %}"><button class="btn btn-success">Cadastrar</button></a></li>
           {% else %}
-          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:home_ativos' %}"><button class="btn btn-secondary"><i class="fas fa-home"> </i></button></a></li> {# Novo botão Home #}
-          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:carteira' %}"><button class="btn btn-info">Minha Carteira</button></a></li> {# Novo link #}
-          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:favoritos' %}"><button class="btn btn-success">Meus Favoritos</button></a></li> {# Novo link #}
-          <li class="nav-item"><a class="nav-link active" href="{% url 'auth:sair' %}"><button class="btn btn-danger">Sair</button></a></li> {# Usar namespace 'auth' #}
+          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:home_ativos' %}"><button class="btn btn-secondary"><i class="fas fa-home"> </i></button></a></li>
+          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:carteira' %}"><button class="btn btn-info">Minha Carteira</button></a></li>
+          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:favoritos' %}"><button class="btn btn-success">Meus Favoritos</button></a></li>
+          <li class="nav-item"><a class="nav-link active" href="{% url 'auth:sair' %}"><button class="btn btn-danger">Sair</button></a></li>
           {% endif %}
         </ul>
-        {# A barra de busca foi removida daqui, pois a home page agora é o login #}
+      
       </nav>
     </header>
   {% block body %}
   {% endblock %}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  <script src="{% static 'js/script.js' %}"></script> {# Incluir o JavaScript customizado #}
+  <script src="{% static 'js/script.js' %}"></script> 
 </body>
 </html>
 
