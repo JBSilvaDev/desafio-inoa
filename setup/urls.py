@@ -8,5 +8,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('auth_user.urls', namespace='auth')),
     path('detalhes/<int:id>', detalhes_ativos, name='detalhes_ativos'),
-    path('ativos/', include('ativos_global.urls', namespace='ativos')), # Adicionar namespace
+    path('ativos/', include('ativos_global.urls', namespace='ativos')),
+    path('favoritos/', include('ativos_user.urls', namespace='ativos_user')), # Adicionar aqui
 ]

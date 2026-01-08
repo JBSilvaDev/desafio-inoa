@@ -8,7 +8,6 @@ urlpatterns = [
     path('cadastro/', cadastro, name='cadastro'),
     path('login/', login, name='login'),
     path("sair", sair, name='sair'),
-    path('favoritos/', include('ativos_user.urls', namespace='ativos_user')),
     path('update_wallet/<int:id>', update_wallet, name='update_wallet'),
 
 ]
