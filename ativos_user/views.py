@@ -139,6 +139,35 @@ def home_ativos(request): # Nova view para a Home
     
     return render(request, 'home_ativos.html', {'ativos': ativos_por_pagina})
 
+@login_required(login_url='login')
+def detalhes_ativo(request, ativo_user_id): # Nova view de detalhes
+    ativo_user = get_object_or_404(AtivosUser, id=ativo_user_id, user=request.user)
+    cod_ativo = ativo_user.ativo.cod_ativo
+
+    # Criar uma instância do formulário para o modal
+    form = AtivoUserForm(instance=ativo_user)
+
+    # Buscar dados atuais do ativo
+    stock_data = get_stock_data(cod_ativo)
+    
+    # Buscar histórico de preços
+    historical_data = get_stock_history(cod_ativo)
+
+    # Preparar dados para o gráfico
+    chart_data = {
+        'x': [item['date'] for item in historical_data],
+        'y': [item['close'] for item in historical_data],
+        'title': f'Histórico de Preços de {cod_ativo}',
+    }
+
+    context = {
+        'ativo_user': ativo_user,
+        'stock_data': stock_data,
+        'chart_data_json': json.dumps(chart_data), # Passar como JSON para o template
+        'form': form, # Passar o formulário para o contexto
+    }
+    return render(request, 'detalhes.html', context)
+
 @require_POST
 @login_required
 def update_ativo_config(request, ativo_id):
