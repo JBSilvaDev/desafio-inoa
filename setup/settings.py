@@ -146,8 +146,17 @@ MESSAGE_TAGS = {
 #AUTH_USER_MODEL = auth_user.Users
 
 # Email Configuration (for development)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'noreply@example.com'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# DEFAULT_FROM_EMAIL = 'noreply@example.com'
+
+# Configuração para envio de e-mails reais (Gmail SMTP)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'jbsilva.bkp@gmail.com'
+EMAIL_HOST_PASSWORD = 'irzl nlql fojv kdxp' # Senha de aplicativo fornecida
+DEFAULT_FROM_EMAIL = 'jbsilva.bkp@gmail.com' # O e-mail que aparecerá como remetente
 
 # Configuração da API brapi.dev
 # ATENÇÃO: Substitua 'SUA_CHAVE_DA_API_BRAPI' pela sua chave real.
