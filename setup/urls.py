@@ -9,5 +9,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('auth_user.urls')),
     path('detalhes/<int:id>', detalhes_ativos, name='detalhes_ativos'),
-    path('update_data/<int:id>/', update_data, name='update_data'),
 ]

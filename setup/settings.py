@@ -145,3 +145,7 @@ MESSAGE_TAGS = {
 }
 
 #AUTH_USER_MODEL = auth_user.Users
+
+# Email Configuration (for development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@example.com'
