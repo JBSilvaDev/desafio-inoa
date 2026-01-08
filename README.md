@@ -31,7 +31,7 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina local
 
 ```bash
 # Substitua <URL_DO_SEU_REPOSITORIO> pela URL do seu repositório Git
-git clone <URL_DO_SEU_REPOSITORIO>
+git clone https://github.com/JBSilvaDev/desafio-inoa
 cd desafio-inoa
 python -m venv venv
 ```
