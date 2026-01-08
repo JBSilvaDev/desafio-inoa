@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.views.decorators.http import require_POST
+from django.contrib.messages import constants
+
+from ativos_global.models import AtivosList # Adicionar esta linha
 from .models import AtivosUser
 from .forms import AtivoUserForm
 
