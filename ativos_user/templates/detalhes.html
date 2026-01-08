@@ -49,26 +49,27 @@ Detalhes do Ativo
 
 
     <script>
-        // A função updateChart não será mais chamada via AJAX para buscar dados,
-        // pois os dados já vêm no contexto da view.
-        // Apenas renderizar o gráfico uma vez com os dados iniciais.
         $(document).ready(function () {
             const chartData = JSON.parse('{{ chart_data_json|escapejs }}');
 
-            Plotly.newPlot('plot', [{
-                x: chartData.x.map(dateString => new Date(dateString)),
-                y: chartData.y,
-                type: 'line',
-                name: chartData.title,
-            }], {
-                title: chartData.title,
-                xaxis: {
-                    title: 'Data'
-                },
-                yaxis: {
-                    title: 'Preço (R$)'
-                }
-            });
+            if (chartData && chartData.x && chartData.x.length > 0 && chartData.y && chartData.y.length > 0) {
+                Plotly.newPlot('plot', [{
+                    x: chartData.x.map(dateString => new Date(dateString)),
+                    y: chartData.y,
+                    type: 'line',
+                    name: chartData.title,
+                }], {
+                    title: chartData.title,
+                    xaxis: {
+                        title: 'Data'
+                    },
+                    yaxis: {
+                        title: 'Preço (R$)'
+                    }
+                });
+            } else {
+                $('#plot').html('<p class="text-warning">Não há dados históricos disponíveis para exibir o gráfico.</p>');
+            }
         });
     </script>
 

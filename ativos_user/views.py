@@ -117,33 +117,27 @@ def favoritos(request): # Nova view para favoritos
     return render(request, 'favoritos.html', {'ativos': ativos_por_pagina, "favorito": True}) # Renderizar o template 'favoritos.html' por enquanto
 
 @login_required(login_url='login')
-def detalhes_ativo(request, ativo_user_id): # Nova view de detalhes
-    ativo_user = get_object_or_404(AtivosUser, id=ativo_user_id, user=request.user)
-    cod_ativo = ativo_user.ativo.cod_ativo
-
-    # Criar uma instância do formulário para o modal
-    form = AtivoUserForm(instance=ativo_user)
-
-    # Buscar dados atuais do ativo
-    stock_data = get_stock_data(cod_ativo)
+def home_ativos(request): # Nova view para a Home
+    user = request.user
+    busca = request.GET.get('cod-ativo')
     
-    # Buscar histórico de preços
-    historical_data = get_stock_history(cod_ativo)
+    if busca:
+        ativos_list = AtivosUser.objects.filter(
+            Q(ativo__cod_ativo__icontains=busca) | Q(ativo__nome_empresa__icontains=busca),
+            user=user,
+        )
+    else:
+        ativos_list = AtivosUser.objects.filter(user=user) # Listar todos os ativos do usuário
 
-    # Preparar dados para o gráfico
-    chart_data = {
-        'x': [item['date'] for item in historical_data],
-        'y': [item['close'] for item in historical_data],
-        'title': f'Histórico de Preços de {cod_ativo}',
-    }
+    # Para cada ativo, crie uma instância do formulário
+    for ativo in ativos_list:
+        ativo.form = AtivoUserForm(instance=ativo)
 
-    context = {
-        'ativo_user': ativo_user,
-        'stock_data': stock_data,
-        'chart_data_json': json.dumps(chart_data), # Passar como JSON para o template
-        'form': form, # Passar o formulário para o contexto
-    }
-    return render(request, 'detalhes.html', context)
+    paginacao = Paginator(ativos_list, 10)
+    page = request.GET.get('page')
+    ativos_por_pagina = paginacao.get_page(page)
+    
+    return render(request, 'home_ativos.html', {'ativos': ativos_por_pagina})
 
 @require_POST
 @login_required
