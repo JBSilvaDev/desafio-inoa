@@ -24,6 +24,14 @@
                     <label for="nome_empresa_manual" class="form-label">Nome da Empresa</label>
                     <input type="text" class="form-control" id="nome_empresa_manual" name="nome_empresa" required>
                 </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="favorito_manual" name="favorito">
+                    <label class="form-check-label" for="favorito_manual">Marcar como Favorito</label>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="em_carteira_manual" name="em_carteira">
+                    <label class="form-check-label" for="em_carteira_manual">Incluir na Carteira</label>
+                </div>
                 <button type="submit" class="btn btn-primary">Adicionar Ativo</button>
             </form>
         </div>
@@ -38,6 +46,7 @@
                 <tr>
                     <th scope="col">Código</th>
                     <th scope="col">Empresa</th>
+                    <th scope="col" class="text-center">Favorito</th> {# Nova coluna #}
                     <th scope="col" class="text-center">Em Carteira</th>
                     <th scope="col" class="text-center">Limite Superior (Venda)</th>
                     <th scope="col" class="text-center">Limite Inferior (Compra)</th>
@@ -51,7 +60,10 @@
                     <td>
                         <a href="{% url 'detalhes_ativos' ativo.ativo.id %}">{{ ativo.ativo.cod_ativo }}</a>
                     </td>
-                    <td>{{ ativo.ativo.nome_empresa }}</td> {# Corrigido para ativo.ativo.nome_empresa #}
+                    <td>{{ ativo.ativo.nome_empresa }}</td>
+                    <td class="text-center"> {# Nova coluna #}
+                        <input class="form-check-input" type="checkbox" {% if ativo.favorito %} checked {% endif %} disabled>
+                    </td>
                     <td class="text-center">
                         <input class="form-check-input" type="checkbox" {% if ativo.em_carteira %} checked {% endif %} disabled>
                     </td>
@@ -70,7 +82,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="configModalLabel-{{ ativo.id }}">Configurar {{ ativo.ativo.cod_ativo }}</h5> {# Corrigido #}
+                                <h5 class="modal-title" id="configModalLabel-{{ ativo.id }}">Configurar {{ ativo.ativo.cod_ativo }}</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -96,7 +108,7 @@
                 </div>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="text-center">Você ainda não adicionou ativos para monitorar.</td>
+                    <td colspan="8" class="text-center">Você ainda não adicionou ativos para monitorar.</td> {# Colspan ajustado #}
                 </tr>
                 {% endfor %}
             </tbody>

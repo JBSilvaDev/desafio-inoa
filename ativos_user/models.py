@@ -9,6 +9,8 @@ class AtivosUser(models.Model):
     limite_superior = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     limite_inferior = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     intervalo_verificacao = models.IntegerField(default=60)  # in minutes
+    favorito = models.BooleanField(default=False) # Novo campo
+    em_carteira = models.BooleanField(default=False) # Novo campo
 
     def __str__(self):
         return f'{self.user.username} - {self.ativo.cod_ativo}'
