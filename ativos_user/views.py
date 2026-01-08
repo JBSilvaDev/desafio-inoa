@@ -60,8 +60,8 @@ def get_stock_history(stock_code, range_param='3mo'):
             print(f"Erro de decodificação JSON para {stock_code}. Resposta da API: {response.text}") # Adicionado print
             return []
         
-        if data and data['results'] and data['results'][0]['historicalData']:
-            historical_data = data['results'][0]['historicalData']
+        if data and data['results'] and data['results'][0]['historicalDataPrice']: # Corrigido aqui
+            historical_data = data['results'][0]['historicalDataPrice'] # Corrigido aqui
             filtered_data = [
                 {'date': item['date'], 'close': item['close']}
                 for item in historical_data if 'close' in item and 'date' in item
