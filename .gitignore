@@ -59,6 +59,7 @@ cover/
 *.log
 local_settings.py
 !db.sqlite3
+dbold.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
@@ -142,6 +143,7 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+testes.ipynb
 
 # Pyre type checker
 .pyre/
