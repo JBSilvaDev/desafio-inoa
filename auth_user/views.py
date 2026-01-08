@@ -61,48 +61,25 @@ def sair(request):
     auth.logout(request)
     return redirect("index")
 
-def update_wallet(request, id):
-    ativo = get_object_or_404(AtivosList, id=id)
-    user_id = request.user.id
-    ativo_fc = AtivosUser.objects.filter(cod_ativo=ativo.cod_ativo).filter(
-        user_id=user_id)
-    ativos_favoritos = AtivosUser.objects.all().filter(user_id=user_id)
-    paginacao = Paginator(ativos_favoritos, 10)
-    page = request.GET.get('page')
-    ativos_por_pagina = paginacao.get_page(page)
-    if request.method == "POST":
-            if "+f" in request.POST:
-                if len(ativo_fc) == 0:
-                    ativo_user = AtivosUser(
-                        user_id=User.objects.get(username=request.user.username),
-                        id_ativo_list=id,
-                        cod_ativo=ativo.cod_ativo,
-                        nome_empresa=ativo.nome_empresa,
-                        favorito=True,
-                        em_carteira=False,
-                        variacao_percent=0.0,
-                    )
-                    ativo_user.save()
-                    return render(request, "favoritos.html", {"ativos": ativos_por_pagina})
-            elif "-f" in request.POST:
-                ativo_fc.first().delete()
-                return render(request, "favoritos.html", {"ativos": ativos_por_pagina})
-            else:
-                if len(ativo_fc) == 0:
-                    ativo_user = AtivosUser(
-                        user_id=User.objects.get(username=request.user.username),
-                        id_ativo_list=id,
-                        cod_ativo=ativo.cod_ativo,
-                        nome_empresa=ativo.nome_empresa,
-                        favorito=True,
-                        em_carteira=True,
-                        variacao_percent=0.0,
-                    )
-                    ativo_user.save()
-                else:
-                    ativo_user = ativo_fc.first()
-                    ativo_user.em_carteira = not ativo_user.em_carteira
-                    ativo_user.save()
-                return render(request, "favoritos.html", {"ativos": ativos_por_pagina})
+from django.views.decorators.http import require_POST
 
-    return render(request, "detalhes.html", {"ativo": ativo})
+@require_POST
+def update_wallet(request, id):
+    ativo_global = get_object_or_404(AtivosList, id=id)
+    user = request.user
+
+    # Tenta encontrar o ativo na lista de monitoramento do usuário
+    ativo_user, created = AtivosUser.objects.get_or_create(
+        user=user,
+        ativo=ativo_global,
+        # O get_or_create usará os defaults do modelo para os outros campos
+    )
+
+    if created:
+        messages.add_message(request, constants.SUCCESS, f'O ativo {ativo_global.cod_ativo} foi adicionado à sua lista de monitoramento.')
+    else:
+        # Se o objeto não foi criado, significa que ele já existia e deve ser removido.
+        ativo_user.delete()
+        messages.add_message(request, constants.SUCCESS, f'O ativo {ativo_global.cod_ativo} foi removido da sua lista de monitoramento.')
+
+    return redirect('detalhes_ativos', id=id)

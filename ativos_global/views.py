@@ -37,13 +37,23 @@ def detalhes_ativos(request, id):
             "fechamento": f'{df["Close"].iloc[-1]:.2f}',
             "volume": f'{df["Volume"].iloc[-1]}',
         }
-
-    user_id = request.user.id
-    ativo_fc = AtivosUser.objects.filter(ativo__cod_ativo=ativo.cod_ativo, user_id=user_id).first()
-
-    if ativo_fc and ativo_fc.variacao_percent is not None:
-        lasts['variacao'] = f'{ativo_fc.variacao_percent/100:.1%}'
     else:
-        lasts['variacao'] = f'{0:.1%}'
+        lasts = {
+            "fechamento": "N/D",
+            "volume": "N/D",
+        }
 
-    return render(request, "detalhes.html", {"ativo": ativo, "lasts": lasts})
+    # Para uma futura implementação, a variação pode ser calculada com base no histórico de preços.
+    lasts['variacao'] = "N/D"
+
+    is_monitored = False
+    if request.user.is_authenticated:
+        is_monitored = AtivosUser.objects.filter(user=request.user, ativo=ativo).exists()
+
+    context = {
+        "ativo": ativo,
+        "lasts": lasts,
+        "is_monitored": is_monitored
+    }
+
+    return render(request, "detalhes.html", context)

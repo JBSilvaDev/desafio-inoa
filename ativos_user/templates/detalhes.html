@@ -33,10 +33,11 @@ Detalhes Page
             {% if user.is_authenticated %}
             <form method="POST" action="{% url 'update_wallet' ativo.id %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-success btn-sm" name="+f">+FAVORITO</button>
-                <button type="submit" class="btn btn-danger btn-sm" name="-f">-FAVORITO</button>
-                <button type="submit" class="btn btn-success btn-sm" name="+c">+CARTEIRA</button>
-                <button type="submit" class="btn btn-danger btn-sm" name="-c">-CARTEIRA</button>
+                {% if is_monitored %}
+                    <button type="submit" class="btn btn-danger">Remover do Monitoramento</button>
+                {% else %}
+                    <button type="submit" class="btn btn-success">Adicionar ao Monitoramento</button>
+                {% endif %}
             </form>
             {% endif %}
         </section>
