@@ -45,7 +45,7 @@ def get_stock_history(stock_code, period="1d", interval="15m"):
     endpoint = f"quote/{stock_code}"
     
     params = {
-        "range": "1mo", # Último mês
+        "range": "3mo", # Últimos 3 meses
         "interval": "1d" # Dados diários
     }
     data = _fetch_brapi_data(endpoint, params=params)

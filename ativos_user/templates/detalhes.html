@@ -64,20 +64,27 @@ Detalhes Page
                         x: xData,
                         y: data.y,
                         type: 'line',
-                        markers: { color: 'blue' },
+                        // markers: { color: 'blue' }, // Removido
                         name: data.title,
                     }], {
-                        annotations: data.y.map((value, index) => ({
-                            x: xData[index],
-                            y: value,
-                            xref: 'x',
-                            yref: 'y',
-                            text: value.toFixed(2),
-                            showarrow: false,
-                            arrowhead: 4,
-                            ax: 0,
-                            ay: -30,
-                        })),
+                        // annotations: data.y.map((value, index) => ({ // Removido
+                        //     x: xData[index],
+                        //     y: value,
+                        //     xref: 'x',
+                        //     yref: 'y',
+                        //     text: value.toFixed(2),
+                        //     showarrow: false,
+                        //     arrowhead: 4,
+                        //     ax: 0,
+                        //     ay: -30,
+                        // })),
+                        title: data.title, // Adicionado título ao layout
+                        xaxis: {
+                            title: 'Data'
+                        },
+                        yaxis: {
+                            title: 'Preço (R$)'
+                        }
                     });
 
                     setTimeout(updateChart, 10000);
