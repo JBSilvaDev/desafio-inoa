@@ -56,7 +56,7 @@
                 {% for ativo in ativos %}
                 <tr>
                     <td>
-                        {{ ativo.ativo.cod_ativo }} {# Removido o link para detalhes_ativos #}
+                        <a href="{% url 'ativos_user:detalhes_ativo' ativo.id %}">{{ ativo.ativo.cod_ativo }}</a> {# Adicionado o link para detalhes_ativo #}
                     </td>
                     <td>{{ ativo.ativo.nome_empresa }}</td>
                     <td class="text-center"> {# Nova coluna #}

@@ -1,14 +1,70 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required # Adicionar esta linha
-from django.core.paginator import Paginator # Adicionar esta linha
-from django.db.models import Q # Adicionar esta linha
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.messages import constants
+from django.conf import settings
+import requests
+import json
+from datetime import datetime, timedelta
 
-# from ativos_global.models import AtivosList # Removido
-from .models import Ativo, AtivosUser # Importar o novo modelo Ativo
+from .models import Ativo, AtivosUser, PrecoAtivo # Importar o novo modelo Ativo e PrecoAtivo
 from .forms import AtivoUserForm
+
+# Funções para buscar dados da API (adaptadas de ativos_global/services.py)
+def get_stock_data(stock_code):
+    api_key = settings.BRAPI_API_KEY
+    url = f"https://brapi.dev/api/quote/{stock_code}?token={api_key}"
+    
+    try:
+        response = requests.get(url, verify=False) # Usar verify=False para evitar problemas de SSL
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        data = response.json()
+        
+        if data and data['results']:
+            stock_info = data['results'][0]
+            return {
+                'symbol': stock_info.get('symbol'),
+                'shortName': stock_info.get('shortName'),
+                'longName': stock_info.get('longName'),
+                'currency': stock_info.get('currency'),
+                'regularMarketPrice': stock_info.get('regularMarketPrice'),
+                'regularMarketChange': stock_info.get('regularMarketChange'),
+                'regularMarketChangePercent': stock_info.get('regularMarketChangePercent'),
+                'regularMarketDayHigh': stock_info.get('regularMarketDayHigh'),
+                'regularMarketDayLow': stock_info.get('regularMarketLow'),
+                'regularMarketOpen': stock_info.get('regularMarketOpen'),
+                'regularMarketPreviousClose': stock_info.get('regularMarketPreviousClose'),
+                'regularMarketVolume': stock_info.get('regularMarketVolume'),
+                'marketCap': stock_info.get('marketCap'),
+                'logourl': stock_info.get('logourl'),
+            }
+    except requests.exceptions.RequestException as e:
+        print(f"Erro ao buscar dados da API para {stock_code}: {e}")
+    return None
+
+def get_stock_history(stock_code, range_param='3mo'):
+    api_key = settings.BRAPI_API_KEY
+    url = f"https://brapi.dev/api/quote/{stock_code}/history?range={range_param}&interval=1d&token={api_key}"
+    
+    try:
+        response = requests.get(url, verify=False) # Usar verify=False para evitar problemas de SSL
+        response.raise_for_status()
+        data = response.json()
+        
+        if data and data['results'] and data['results'][0]['historicalData']:
+            historical_data = data['results'][0]['historicalData']
+            # Filtrar dados para garantir que 'close' e 'date' existam
+            filtered_data = [
+                {'date': item['date'], 'close': item['close']}
+                for item in historical_data if 'close' in item and 'date' in item
+            ]
+            return filtered_data
+    except requests.exceptions.RequestException as e:
+        print(f"Erro ao buscar histórico da API para {stock_code}: {e}")
+    return []
 
 @login_required(login_url='login')
 def carteira(request): # Renomeado de favoritos para carteira
@@ -59,6 +115,35 @@ def favoritos(request): # Nova view para favoritos
     ativos_por_pagina = paginacao.get_page(page)
     
     return render(request, 'favoritos.html', {'ativos': ativos_por_pagina, "favorito": True}) # Renderizar o template 'favoritos.html' por enquanto
+
+@login_required(login_url='login')
+def detalhes_ativo(request, ativo_user_id): # Nova view de detalhes
+    ativo_user = get_object_or_404(AtivosUser, id=ativo_user_id, user=request.user)
+    cod_ativo = ativo_user.ativo.cod_ativo
+
+    # Criar uma instância do formulário para o modal
+    form = AtivoUserForm(instance=ativo_user)
+
+    # Buscar dados atuais do ativo
+    stock_data = get_stock_data(cod_ativo)
+    
+    # Buscar histórico de preços
+    historical_data = get_stock_history(cod_ativo)
+
+    # Preparar dados para o gráfico
+    chart_data = {
+        'x': [item['date'] for item in historical_data],
+        'y': [item['close'] for item in historical_data],
+        'title': f'Histórico de Preços de {cod_ativo}',
+    }
+
+    context = {
+        'ativo_user': ativo_user,
+        'stock_data': stock_data,
+        'chart_data_json': json.dumps(chart_data), # Passar como JSON para o template
+        'form': form, # Passar o formulário para o contexto
+    }
+    return render(request, 'detalhes.html', context)
 
 @require_POST
 @login_required

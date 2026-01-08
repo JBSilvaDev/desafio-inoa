@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block titulo %}
-Detalhes Page
+Detalhes do Ativo
 {% endblock %}
 {% block body %}
 
 <body>
     <div class="container mt-4">
-        <h1>Detalhamento de {{ ativo.nome_empresa }}</h1>
+        <h1>Detalhamento de {{ ativo_user.ativo.nome_empresa }}</h1>
 
         <section class="ativos-list">
             <table class="table">
@@ -22,22 +22,21 @@ Detalhes Page
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{{ ativo.cod_ativo }}</td>
-                        <td>{{ ativo.nome_empresa }}</td>
-                        <td>R$ {{ lasts.fechamento }}</td>
-                        <td>{{ lasts.volume }}</td>
-                        <td>{{ lasts.variacao }}</td>
+                        <td>{{ ativo_user.ativo.cod_ativo }}</td>
+                        <td>{{ ativo_user.ativo.nome_empresa }}</td>
+                        <td>R$ {{ stock_data.regularMarketPrice|default:"N/A" }}</td>
+                        <td>{{ stock_data.regularMarketVolume|default:"N/A" }}</td>
+                        <td>{{ stock_data.regularMarketChangePercent|default:"N/A" }}%</td>
                     </tr>
                 </tbody>
             </table>
             {% if user.is_authenticated %}
-            <form method="POST" action="{% url 'auth:update_wallet' ativo.id %}">
+            <form method="POST" action="{% url 'ativos_user:update_ativo_config' ativo_user.id %}"> {# Ação de update_wallet não existe mais, usar update_ativo_config #}
                 {% csrf_token %}
-                {% if is_monitored %}
-                    <button type="submit" class="btn btn-danger">Remover do Monitoramento</button>
-                {% else %}
-                    <button type="submit" class="btn btn-success">Adicionar ao Monitoramento</button>
-                {% endif %}
+                {# A lógica de is_monitored não é mais relevante aqui, pois o ativo_user já existe #}
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#configModal-{{ ativo_user.id }}">
+                    Configurar Monitoramento
+                </button>
             </form>
             {% endif %}
         </section>
@@ -50,58 +49,66 @@ Detalhes Page
 
 
     <script>
-        function updateChart() {
-            $.ajax({
-                url: '{% url "detalhes_ativos" id=ativo.id %}',
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
+        // A função updateChart não será mais chamada via AJAX para buscar dados,
+        // pois os dados já vêm no contexto da view.
+        // Apenas renderizar o gráfico uma vez com os dados iniciais.
+        $(document).ready(function () {
+            const chartData = JSON.parse('{{ chart_data_json|escapejs }}');
 
-                    const xData = data.x.map(dateString => new Date(dateString));
-
-                    Plotly.newPlot('plot', [{
-                        x: xData,
-                        y: data.y,
-                        type: 'line',
-                        // markers: { color: 'blue' }, // Removido
-                        name: data.title,
-                    }], {
-                        // annotations: data.y.map((value, index) => ({ // Removido
-                        //     x: xData[index],
-                        //     y: value,
-                        //     xref: 'x',
-                        //     yref: 'y',
-                        //     text: value.toFixed(2),
-                        //     showarrow: false,
-                        //     arrowhead: 4,
-                        //     ax: 0,
-                        //     ay: -30,
-                        // })),
-                        title: data.title, // Adicionado título ao layout
-                        xaxis: {
-                            title: 'Data'
-                        },
-                        yaxis: {
-                            title: 'Preço (R$)'
-                        }
-                    });
-
-                    setTimeout(updateChart, 10000);
+            Plotly.newPlot('plot', [{
+                x: chartData.x.map(dateString => new Date(dateString)),
+                y: chartData.y,
+                type: 'line',
+                name: chartData.title,
+            }], {
+                title: chartData.title,
+                xaxis: {
+                    title: 'Data'
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error("Erro ao buscar dados do gráfico:", textStatus, errorThrown);
-                    $('#plot').html('<p class="text-danger">Não foi possível carregar o gráfico. Verifique o console para mais detalhes.</p>');
-                    // Opcional: tentar novamente após um intervalo maior em caso de erro
-                    // setTimeout(updateChart, 30000);
+                yaxis: {
+                    title: 'Preço (R$)'
                 }
             });
-        }
-
-        $(document).ready(function () {
-            updateChart();
         });
     </script>
+
+    <!-- Modal para configuração do ativo (copiado de favoritos.html) -->
+    <div class="modal fade" id="configModal-{{ ativo_user.id }}" tabindex="-1" aria-labelledby="configModalLabel-{{ ativo_user.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="configModalLabel-{{ ativo_user.id }}">Configurar {{ ativo_user.ativo.cod_ativo }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'ativos_user:update_ativo_config' ativo_user.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ ativo_user.form.limite_superior.label_tag }}
+                            {{ ativo_user.form.limite_superior }}
+                        </div>
+                        <div class="mb-3">
+                            {{ ativo_user.form.limite_inferior.label_tag }}
+                            {{ ativo_user.form.limite_inferior }}
+                        </div>
+                        <div class="mb-3">
+                            {{ ativo_user.form.intervalo_verificacao.label_tag }}
+                            {{ ativo_user.form.intervalo_verificacao }}
+                        </div>
+                        <div class="mb-3 form-check">
+                            {{ ativo_user.form.favorito }}
+                            {{ ativo_user.form.favorito.label_tag }}
+                        </div>
+                        <div class="mb-3 form-check">
+                            {{ ativo_user.form.em_carteira }}
+                            {{ ativo_user.form.em_carteira.label_tag }}
+                        </div>
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 
