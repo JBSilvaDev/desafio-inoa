@@ -6,7 +6,7 @@ from ativos_global.views import detalhes_ativos # Importar apenas a view necess√
 urlpatterns = [
     path('', login, name='home'), # Nova home page √© o login
     path('admin/', admin.site.urls),
-    path('auth/', include('auth_user.urls')),
+    path('auth/', include('auth_user.urls', namespace='auth')),
     path('detalhes/<int:id>', detalhes_ativos, name='detalhes_ativos'),
     path('ativos/', include('ativos_global.urls', namespace='ativos')), # Adicionar namespace
 ]
