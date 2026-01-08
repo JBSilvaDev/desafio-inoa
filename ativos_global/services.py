@@ -1,13 +1,21 @@
 import yfinance as yf
 import requests
+import urllib3 # Importar urllib3 para desabilitar avisos
+
+# Desabilitar avisos de SSL (apenas para desenvolvimento/depuração)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Criar uma sessão requests com verify=False
+session = requests.Session()
+session.verify = False
 
 def get_stock_price(stock_code):
     """
     Fetches the last closing price for a given stock code.
     """
     try:
-        ticker = yf.Ticker(f'{stock_code}.SA')
-        # Use '1d' period and a recent interval to get the latest data
+        # Passar a sessão para o yfinance
+        ticker = yf.Ticker(f'{stock_code}.SA', session=session)
         data = ticker.history(period="1d", interval="1m")
         if not data.empty:
             return data['Close'].iloc[-1]
@@ -22,7 +30,8 @@ def get_stock_history(stock_code, period="1d", interval="15m"):
     Fetches historical data for a given stock code.
     """
     try:
-        ticker = yf.Ticker(f'{stock_code}.SA')
+        # Passar a sessão para o yfinance
+        ticker = yf.Ticker(f'{stock_code}.SA', session=session)
         df = ticker.history(period=period, interval=interval)
         return df.reset_index()
     except requests.exceptions.RequestException as e:
