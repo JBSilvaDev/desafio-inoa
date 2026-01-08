@@ -16,10 +16,13 @@ from .forms import AtivoUserForm
 # Funções para buscar dados da API (adaptadas de ativos_global/services.py)
 def get_stock_data(stock_code):
     api_key = settings.BRAPI_API_KEY
-    url = f"https://brapi.dev/api/quote/{stock_code}?token={api_key}"
+    url = f"https://brapi.dev/api/quote/{stock_code}" # Remover token da URL
+    headers = {"Authorization": f"Bearer {api_key}"} # Adicionar Authorization header
+    
+    print(f"Chamando API para dados atuais: {url} com headers: {headers}") # Adicionar print da URL
     
     try:
-        response = requests.get(url, verify=False) # Usar verify=False para evitar problemas de SSL
+        response = requests.get(url, headers=headers, verify=False) # Usar headers
         response.raise_for_status()  # Raise an exception for HTTP errors
         data = response.json()
         
@@ -47,28 +50,31 @@ def get_stock_data(stock_code):
 
 def get_stock_history(stock_code, range_param='3mo'):
     api_key = settings.BRAPI_API_KEY
-    url = f"https://brapi.dev/api/quote/{stock_code}/history?range={range_param}&interval=1d&token={api_key}"
+    url = f"https://brapi.dev/api/quote/{stock_code}?range={range_param}&interval=1d" # Alterado o endpoint
+    headers = {"Authorization": f"Bearer {api_key}"}
+    
+    print(f"Chamando API para histórico: {url} com headers: {headers}")
     
     try:
-        response = requests.get(url, verify=False)
+        response = requests.get(url, headers=headers, verify=False)
         response.raise_for_status()
         
         # Tentar decodificar JSON
         try:
             data = response.json()
         except json.JSONDecodeError:
-            print(f"Erro de decodificação JSON para {stock_code}. Resposta da API: {response.text}") # Adicionado print
+            print(f"Erro de decodificação JSON para {stock_code}. Resposta da API: {response.text}")
             return []
         
-        if data and data['results'] and data['results'][0]['historicalDataPrice']: # Corrigido aqui
-            historical_data = data['results'][0]['historicalDataPrice'] # Corrigido aqui
+        if data and data['results'] and data['results'][0]['historicalDataPrice']:
+            historical_data = data['results'][0]['historicalDataPrice']
             filtered_data = [
                 {'date': item['date'], 'close': item['close']}
                 for item in historical_data if 'close' in item and 'date' in item
             ]
             return filtered_data
         else:
-            print(f"Dados históricos vazios ou malformados para {stock_code}. Resposta da API: {data}") # Adicionado print
+            print(f"Dados históricos vazios ou malformados para {stock_code}. Resposta da API: {data}")
             return []
     except requests.exceptions.RequestException as e:
         print(f"Erro ao buscar histórico da API para {stock_code}: {e}")
