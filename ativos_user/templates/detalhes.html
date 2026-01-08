@@ -31,7 +31,7 @@ Detalhes Page
                 </tbody>
             </table>
             {% if user.is_authenticated %}
-            <form method="POST" action="{% url 'update_wallet' ativo.id %}">
+            <form method="POST" action="{% url 'auth:update_wallet' ativo.id %}">
                 {% csrf_token %}
                 {% if is_monitored %}
                     <button type="submit" class="btn btn-danger">Remover do Monitoramento</button>

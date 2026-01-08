@@ -12,7 +12,7 @@
     </div>
 
     <div class="row mb-4">
-        <div class="col-md-6">
+        <div class="col-md-12"> {# Ajustado para ocupar a largura total #}
             <h3>Adicionar Ativo Manualmente</h3>
             <form method="POST" action="{% url 'ativos_user:add_manual_asset' %}"> {# Usar namespace #}
                 {% csrf_token %}
@@ -35,9 +35,7 @@
                 <button type="submit" class="btn btn-primary">Adicionar Ativo</button>
             </form>
         </div>
-        <div class="col-md-6 d-flex align-items-center justify-content-center">
-            <a href="{% url 'ativos:index' %}" class="btn btn-info btn-lg">Buscar Mais Ativos</a>
-        </div>
+        {# Removido o botão "Buscar Mais Ativos" #}
     </div>
 
     <div class="table-responsive">
