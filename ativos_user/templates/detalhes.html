@@ -51,7 +51,7 @@ Detalhes Page
     <script>
         function updateChart() {
             $.ajax({
-                url: '{% url "update_data" id=ativo.id %}',
+                url: '{% url "detalhes_ativos" id=ativo.id %}',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
