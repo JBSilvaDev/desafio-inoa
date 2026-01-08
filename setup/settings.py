@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 from django.contrib.messages import constants
+from dotenv import load_dotenv # Adicionado
+
+# Carregar variáveis de ambiente do arquivo .env # Adicionado
+load_dotenv() # Adicionado
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -151,14 +156,14 @@ MESSAGE_TAGS = {
 
 # Configuração para envio de e-mails reais (Gmail SMTP)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'jbsilva.bkp@gmail.com'
-EMAIL_HOST_PASSWORD = 'irzl nlql fojv kdxp' # Senha de aplicativo fornecida
-DEFAULT_FROM_EMAIL = 'jbsilva.bkp@gmail.com' # O e-mail que aparecerá como remetente
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'jbsilva.bkp@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'irzl nlql fojv kdxp') # Senha de aplicativo fornecida
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'jbsilva.bkp@gmail.com') # O e-mail que aparecerá como remetente
 
 # Configuração da API brapi.dev
 # ATENÇÃO: Substitua 'SUA_CHAVE_DA_API_BRAPI' pela sua chave real.
 # Obtenha sua chave em https://brapi.dev/
-BRAPI_API_KEY = os.environ.get('BRAPI_API_KEY', 'SUA_CHAVE_DA_API_BRAPI')
+BRAPI_API_KEY = os.getenv('BRAPI_API_KEY', 'SUA_CHAVE_DA_API_BRAPI')

@@ -59,3 +59,4 @@ urllib3
 wcwidth
 webencodings
 yfinance
+python-dotenv

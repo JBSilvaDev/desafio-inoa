@@ -26,6 +26,11 @@ class Command(BaseCommand):
         for ativo_user in ativos_para_monitorar:
             self.stdout.write(f'Verificando ativo: {ativo_user.ativo.cod_ativo} para o usuário: {ativo_user.user.username}')
             
+            # Se intervalo_verificacao for 0, não monitorar este ativo
+            if ativo_user.intervalo_verificacao == 0:
+                self.stdout.write(f'  - Ativo {ativo_user.ativo.cod_ativo} tem intervalo de verificação 0. Pulando monitoramento.')
+                continue
+
             # Verificar se o intervalo de verificação já passou
             if ativo_user.last_alert_sent:
                 time_since_last_alert = timezone.now() - ativo_user.last_alert_sent
