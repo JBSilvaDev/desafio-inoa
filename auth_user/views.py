@@ -20,17 +20,17 @@ def cadastro(request):
         senha = request.POST.get("senha")
         if User.objects.filter(username=nome).exists():
             messages.add_message(request, constants.WARNING, f'Usuário {nome} ja cadastrado, faça login, ou um novo cadastro')
-            return redirect('auth_user:login') # Usar namespace
+            return redirect('auth:login') # Usar namespace 'auth'
         elif User.objects.filter(email=email).exists():
             messages.add_message(request, constants.WARNING, f'Usuário {email} ja cadastrado, faça login, ou um novo cadastro')
-            return redirect('auth_user:login') # Usar namespace
+            return redirect('auth:login') # Usar namespace 'auth'
         if len(nome.strip()) == 0 or len(email.strip()) == 0:
             messages.add_message(request, constants.ERROR, 'Nome e E-mail não podem ser vazios')
             return render(request, "cadastro.html")
         usuario = User.objects.create_user(username=nome, email=email, password=senha)
         usuario.save()
         messages.add_message(request, constants.SUCCESS, f'Cadastro realizado com sucesso, {nome}, faça login para acesso total')
-        return redirect("auth_user:login") # Redirecionar para login após cadastro
+        return redirect("auth:login") # Redirecionar para login após cadastro
     return render(request, "cadastro.html")
 
 
@@ -51,13 +51,13 @@ def login(request):
             return redirect("ativos_user:favoritos") # Redirecionar para favoritos após login
         else:
             messages.add_message(request, constants.WARNING, 'Usuário ou senha invalidos, faça cadastro caso nao tenha conta registrada')
-            return redirect('auth_user:cadastro') # Usar namespace
+            return redirect('auth:cadastro') # Usar namespace 'auth'
     return render(request, "login.html")
 
 
 def sair(request):
     if not request.user.is_authenticated:
-        return redirect("auth_user:login") # Usar namespace
+        return redirect("auth:login") # Usar namespace 'auth'
     auth.logout(request)
     return redirect("home") # Redirecionar para a nova home (login) após sair
 
