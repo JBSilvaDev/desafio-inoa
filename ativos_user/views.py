@@ -1,13 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
-from django.db.models import Q
-from django.views.decorators.http import require_POST
-from django.contrib import messages # Adicionar esta linha
 from django.contrib.messages import constants
 
-from ativos_global.models import AtivosList # Adicionar esta linha
-from .models import AtivosUser
+# from ativos_global.models import AtivosList # Removido
+from .models import Ativo, AtivosUser # Importar o novo modelo Ativo
 from .forms import AtivoUserForm
 
 @login_required(login_url='login')
@@ -63,14 +57,12 @@ def favoritos(request): # Nova view para favoritos
 @require_POST
 @login_required
 def update_ativo_config(request, ativo_id):
-    ativo_user = get_object_or_404(AtivosUser, id=ativo_id, user=request.user) # Usar user=request.user
+    ativo_user = get_object_or_404(AtivosUser, id=ativo_id, user=request.user)
     form = AtivoUserForm(request.POST, instance=ativo_user)
     
     if form.is_valid():
-        # Salvar o formulário para atualizar os campos
         form.save()
 
-        # Lógica de remoção: se ambos forem False, deletar o registro
         if not ativo_user.favorito and not ativo_user.em_carteira:
             ativo_user.delete()
             messages.add_message(request, constants.SUCCESS, f'Ativo {ativo_user.ativo.cod_ativo} removido do monitoramento.')
@@ -78,10 +70,8 @@ def update_ativo_config(request, ativo_id):
             messages.add_message(request, constants.SUCCESS, f'Configurações do ativo {ativo_user.ativo.cod_ativo} atualizadas com sucesso.')
     else:
         messages.add_message(request, constants.ERROR, 'Erro ao atualizar configurações do ativo.')
-        # Você pode querer renderizar o modal novamente com os erros do formulário
-        # ou redirecionar para uma página de erro mais detalhada.
         
-    return redirect('ativos_user:carteira') # Redirecionar para a página da carteira
+    return redirect('ativos_user:carteira')
 
 @require_POST
 @login_required
@@ -90,33 +80,32 @@ def add_manual_asset(request):
     nome_empresa = request.POST.get('nome_empresa')
     user = request.user
 
-    # Obter status de favorito e em_carteira do formulário
     favorito = request.POST.get('favorito') == 'on'
     em_carteira = request.POST.get('em_carteira') == 'on'
 
     if not cod_ativo or not nome_empresa:
         messages.add_message(request, constants.ERROR, 'Código do ativo e nome da empresa não podem ser vazios.')
-        return redirect('ativos_user:carteira') # Redirecionar para a página da carteira
+        return redirect('ativos_user:carteira')
 
-    ativo_global, created_global = AtivosList.objects.get_or_create(
+    # Criar ou obter o novo modelo Ativo
+    ativo_obj, created_ativo = Ativo.objects.get_or_create( # Alterado para o novo modelo Ativo
         cod_ativo=cod_ativo,
         defaults={'nome_empresa': nome_empresa}
     )
-    if not created_global and ativo_global.nome_empresa != nome_empresa:
-        ativo_global.nome_empresa = nome_empresa
-        ativo_global.save()
+    if not created_ativo and ativo_obj.nome_empresa != nome_empresa:
+        ativo_obj.nome_empresa = nome_empresa
+        ativo_obj.save()
 
     # Tenta encontrar ou criar o ativo na lista de monitoramento do usuário
     ativo_user, created_user = AtivosUser.objects.get_or_create(
         user=user,
-        ativo=ativo_global,
-        defaults={'favorito': favorito, 'em_carteira': em_carteira} # Definir defaults para novos objetos
+        ativo=ativo_obj, # Associar ao novo modelo Ativo
+        defaults={'favorito': favorito, 'em_carteira': em_carteira}
     )
 
     if created_user:
         messages.add_message(request, constants.SUCCESS, f'O ativo {cod_ativo} foi adicionado à sua lista de monitoramento.')
     else:
-        # Se o ativo já existia, atualiza os campos favorito e em_carteira
         if ativo_user.favorito != favorito or ativo_user.em_carteira != em_carteira:
             ativo_user.favorito = favorito
             ativo_user.em_carteira = em_carteira
@@ -125,4 +114,4 @@ def add_manual_asset(request):
         else:
             messages.add_message(request, constants.INFO, f'O ativo {cod_ativo} já estava na sua lista de monitoramento com os mesmos status.')
     
-    return redirect('favoritos')
+    return redirect('ativos_user:carteira')
