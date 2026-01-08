@@ -81,8 +81,13 @@ Detalhes Page
                     });
 
                     setTimeout(updateChart, 10000);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("Erro ao buscar dados do gráfico:", textStatus, errorThrown);
+                    $('#plot').html('<p class="text-danger">Não foi possível carregar o gráfico. Verifique o console para mais detalhes.</p>');
+                    // Opcional: tentar novamente após um intervalo maior em caso de erro
+                    // setTimeout(updateChart, 30000);
                 }
-
             });
         }
 
