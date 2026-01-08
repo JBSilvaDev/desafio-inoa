@@ -1,3 +1,9 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required # Adicionar esta linha
+from django.core.paginator import Paginator # Adicionar esta linha
+from django.db.models import Q # Adicionar esta linha
+from django.views.decorators.http import require_POST
+from django.contrib import messages
 from django.contrib.messages import constants
 
 # from ativos_global.models import AtivosList # Removido

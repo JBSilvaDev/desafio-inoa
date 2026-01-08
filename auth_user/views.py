@@ -1,11 +1,5 @@
-from asyncio import constants
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.models import User
-from django.contrib import auth
-from django.contrib import messages
 from django.contrib.messages import constants
-from ativos_global.models import AtivosList
+# from ativos_global.models import AtivosList # Removido
 from django.core.paginator import Paginator
 from ativos_user.models import AtivosUser
 
@@ -65,21 +59,22 @@ from django.views.decorators.http import require_POST
 
 @require_POST
 def update_wallet(request, id):
-    ativo_global = get_object_or_404(AtivosList, id=id)
-    user = request.user
+    # ativo_global = get_object_or_404(AtivosList, id=id) # Removido
+    # user = request.user
 
     # Tenta encontrar o ativo na lista de monitoramento do usuário
-    ativo_user, created = AtivosUser.objects.get_or_create(
-        user=user,
-        ativo=ativo_global,
-        # O get_or_create usará os defaults do modelo para os outros campos
-    )
+    # ativo_user, created = AtivosUser.objects.get_or_create(
+    #     user=user,
+    #     ativo=ativo_global,
+    #     # O get_or_create usará os defaults do modelo para os outros campos
+    # )
 
-    if created:
-        messages.add_message(request, constants.SUCCESS, f'O ativo {ativo_global.cod_ativo} foi adicionado à sua lista de monitoramento.')
-    else:
-        # Se o objeto não foi criado, significa que ele já existia e deve ser removido.
-        ativo_user.delete()
-        messages.add_message(request, constants.SUCCESS, f'O ativo {ativo_global.cod_ativo} foi removido da sua lista de monitoramento.')
+    # if created:
+    #     messages.add_message(request, constants.SUCCESS, f'O ativo {ativo_global.cod_ativo} foi adicionado à sua lista de monitoramento.')
+    # else:
+    #     # Se o objeto não foi criado, significa que ele já existia e deve ser removido.
+    #     ativo_user.delete()
+    #     messages.add_message(request, constants.SUCCESS, f'O ativo {ativo_global.cod_ativo} foi removido da sua lista de monitoramento.')
 
-    return redirect('detalhes_ativos', id=id)
+    # return redirect('detalhes_ativos', id=id)
+    pass # A view update_wallet não será mais usada, mas manter um placeholder para evitar erros de importação por enquanto
