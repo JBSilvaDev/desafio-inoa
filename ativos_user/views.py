@@ -81,7 +81,7 @@ def update_ativo_config(request, ativo_id):
         # Você pode querer renderizar o modal novamente com os erros do formulário
         # ou redirecionar para uma página de erro mais detalhada.
         
-    return redirect('ativos_user:favoritos') # Redirecionar para a página de favoritos
+    return redirect('ativos_user:carteira') # Redirecionar para a página da carteira
 
 @require_POST
 @login_required
@@ -96,7 +96,7 @@ def add_manual_asset(request):
 
     if not cod_ativo or not nome_empresa:
         messages.add_message(request, constants.ERROR, 'Código do ativo e nome da empresa não podem ser vazios.')
-        return redirect('favoritos')
+        return redirect('ativos_user:carteira') # Redirecionar para a página da carteira
 
     ativo_global, created_global = AtivosList.objects.get_or_create(
         cod_ativo=cod_ativo,
