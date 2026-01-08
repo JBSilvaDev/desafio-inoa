@@ -57,7 +57,7 @@ def get_stock_history(stock_code, range_param='3mo'):
         try:
             data = response.json()
         except json.JSONDecodeError:
-            print(f"Erro de decodificação JSON para {stock_code}. Resposta da API: {response.text}")
+            print(f"Erro de decodificação JSON para {stock_code}. Resposta da API: {response.text}") # Adicionado print
             return []
         
         if data and data['results'] and data['results'][0]['historicalData']:
@@ -68,7 +68,7 @@ def get_stock_history(stock_code, range_param='3mo'):
             ]
             return filtered_data
         else:
-            print(f"Dados históricos vazios ou malformados para {stock_code}. Resposta da API: {data}")
+            print(f"Dados históricos vazios ou malformados para {stock_code}. Resposta da API: {data}") # Adicionado print
             return []
     except requests.exceptions.RequestException as e:
         print(f"Erro ao buscar histórico da API para {stock_code}: {e}")
