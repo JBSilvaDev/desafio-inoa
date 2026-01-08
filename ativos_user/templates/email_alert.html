@@ -1,0 +1,22 @@
+<!-- ativos_user/templates/email_alert.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Alerta de Preço de Ativo</title>
+</head>
+<body>
+    <p>Olá {{ user.username }},</p>
+    <p>Este é um alerta de preço para o ativo <strong>{{ ativo.cod_ativo }} ({{ ativo.nome_empresa }})</strong>.</p>
+    <p>Detalhes do alerta:</p>
+    <p>{{ alert_message|safe }}</p>
+    <p>Preço atual: R$ {{ current_price }}</p>
+    {% if limite_superior %}
+        <p>Limite Superior (Venda): R$ {{ limite_superior }}</p>
+    {% endif %}
+    {% if limite_inferior %}
+        <p>Limite Inferior (Compra): R$ {{ limite_inferior }}</p>
+    {% endif %}
+    <p>Atenciosamente,</p>
+    <p>Sua Equipe de Monitoramento de Ativos</p>
+</body>
+</html>

@@ -17,6 +17,7 @@ class AtivosUser(models.Model):
     intervalo_verificacao = models.IntegerField(default=60)  # in minutes
     favorito = models.BooleanField(default=False)
     em_carteira = models.BooleanField(default=False)
+    last_alert_sent = models.DateTimeField(null=True, blank=True) # Novo campo
 
     def __str__(self):
         return f'{self.user.username} - {self.ativo.cod_ativo}'
