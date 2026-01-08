@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.views.decorators.http import require_POST
+from django.contrib import messages # Adicionar esta linha
 from django.contrib.messages import constants
 
 from ativos_global.models import AtivosList # Adicionar esta linha
@@ -10,7 +11,7 @@ from .models import AtivosUser
 from .forms import AtivoUserForm
 
 @login_required(login_url='login')
-def favoritos(request):
+def carteira(request): # Renomeado de favoritos para carteira
     user = request.user
     busca = request.GET.get('cod-ativo')
     
@@ -32,22 +33,55 @@ def favoritos(request):
     page = request.GET.get('page')
     ativos_por_pagina = paginacao.get_page(page)
     
-    return render(request, 'favoritos.html', {'ativos': ativos_por_pagina, "favorito": True})
+    return render(request, 'favoritos.html', {'ativos': ativos_por_pagina, "favorito": True}) # Renderizar o template 'favoritos.html' por enquanto
+
+@login_required(login_url='login')
+def favoritos(request): # Nova view para favoritos
+    user = request.user
+    busca = request.GET.get('cod-ativo')
+    
+    # Filtrar apenas ativos que estão "favorito"
+    if busca:
+        ativos_list = AtivosUser.objects.filter(
+            Q(ativo__cod_ativo__icontains=busca) | Q(ativo__nome_empresa__icontains=busca),
+            user=user,
+            favorito=True # Filtrar por favorito
+        )
+    else:
+        ativos_list = AtivosUser.objects.filter(user=user, favorito=True) # Filtrar por favorito
+
+    # Para cada ativo, crie uma instância do formulário
+    for ativo in ativos_list:
+        ativo.form = AtivoUserForm(instance=ativo)
+
+    paginacao = Paginator(ativos_list, 10)
+    page = request.GET.get('page')
+    ativos_por_pagina = paginacao.get_page(page)
+    
+    return render(request, 'favoritos.html', {'ativos': ativos_por_pagina, "favorito": True}) # Renderizar o template 'favoritos.html' por enquanto
 
 @require_POST
 @login_required
 def update_ativo_config(request, ativo_id):
-    ativo_user = get_object_or_404(AtivosUser, id=ativo_id, user_id=request.user)
+    ativo_user = get_object_or_404(AtivosUser, id=ativo_id, user=request.user) # Usar user=request.user
     form = AtivoUserForm(request.POST, instance=ativo_user)
     
     if form.is_valid():
+        # Salvar o formulário para atualizar os campos
         form.save()
-        # Adicione uma mensagem de sucesso se desejar
+
+        # Lógica de remoção: se ambos forem False, deletar o registro
+        if not ativo_user.favorito and not ativo_user.em_carteira:
+            ativo_user.delete()
+            messages.add_message(request, constants.SUCCESS, f'Ativo {ativo_user.ativo.cod_ativo} removido do monitoramento.')
+        else:
+            messages.add_message(request, constants.SUCCESS, f'Configurações do ativo {ativo_user.ativo.cod_ativo} atualizadas com sucesso.')
     else:
-        # Adicione uma mensagem de erro se desejar
-        pass
+        messages.add_message(request, constants.ERROR, 'Erro ao atualizar configurações do ativo.')
+        # Você pode querer renderizar o modal novamente com os erros do formulário
+        # ou redirecionar para uma página de erro mais detalhada.
         
-    return redirect('favoritos')
+    return redirect('ativos_user:favoritos') # Redirecionar para a página de favoritos
 
 @require_POST
 @login_required

@@ -19,8 +19,9 @@
           <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}"><button class="btn btn-primary">Login</button></a></li>
           <li class="nav-item"><a class="nav-link active" href="{% url 'auth:cadastro' %}"><button class="btn btn-success">Cadastrar</button></a></li> {# Usar namespace 'auth' #}
           {% else %}
-          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:favoritos' %}"><button class="btn btn-info">Meus Ativos</button></a></li>
-          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:favoritos' %}"><button class="btn btn-success">Buscar Ativos</button></a></li> {# Alterado para favoritos #}
+          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:carteira' %}"><button class="btn btn-info">Minha Carteira</button></a></li> {# Novo link #}
+          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos_user:favoritos' %}"><button class="btn btn-success">Meus Favoritos</button></a></li> {# Novo link #}
+          <li class="nav-item"><a class="nav-link active" href="{% url 'ativos:index' %}"><button class="btn btn-success">Buscar Ativos</button></a></li> {# Botão para buscar todos os ativos #}
           <li class="nav-item"><a class="nav-link active" href="{% url 'auth:sair' %}"><button class="btn btn-danger">Sair</button></a></li> {# Usar namespace 'auth' #}
           {% endif %}
         </ul>
