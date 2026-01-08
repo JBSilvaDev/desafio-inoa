@@ -149,3 +149,8 @@ MESSAGE_TAGS = {
 # Email Configuration (for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@example.com'
+
+# Configuração da API brapi.dev
+# ATENÇÃO: Substitua 'SUA_CHAVE_DA_API_BRAPI' pela sua chave real.
+# Obtenha sua chave em https://brapi.dev/
+BRAPI_API_KEY = os.environ.get('BRAPI_API_KEY', 'SUA_CHAVE_DA_API_BRAPI')
