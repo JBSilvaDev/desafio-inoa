@@ -19,6 +19,7 @@ Home Page
             <tr>
               <th scope="col">Codigo</th>
               <th scope="col">Nome</th>
+              {% if user.is_authenticated %}<th scope="col">Ação</th>{% endif %}
             </tr>
           </thead>
           <tbody>
@@ -29,6 +30,18 @@ Home Page
                   {{ ativo.cod_ativo }}</a>
               </td>
               <td>{{ ativo.nome_empresa }}</td>
+              {% if user.is_authenticated %}
+              <td>
+                <form method="POST" action="{% url 'update_wallet' ativo.id %}">
+                    {% csrf_token %}
+                    {% if ativo.is_monitored %}
+                        <button type="submit" class="btn btn-danger btn-sm">Remover do Monitoramento</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success btn-sm">Adicionar ao Monitoramento</button>
+                    {% endif %}
+                </form>
+              </td>
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>

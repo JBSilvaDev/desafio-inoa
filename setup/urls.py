@@ -1,12 +1,12 @@
-
 from django.contrib import admin
 from django.urls import include, path
-
-from ativos_global.views import *
+from auth_user.views import login # Importar a view de login
+from ativos_global.views import detalhes_ativos # Importar apenas a view necessária
 
 urlpatterns = [
-    path('', include('ativos_global.urls'), name='inicial-page'),
+    path('', login, name='home'), # Nova home page é o login
     path('admin/', admin.site.urls),
     path('auth/', include('auth_user.urls')),
     path('detalhes/<int:id>', detalhes_ativos, name='detalhes_ativos'),
+    path('ativos/', include('ativos_global.urls')), # Mudar a URL base para ativos globais
 ]

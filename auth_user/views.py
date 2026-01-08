@@ -13,7 +13,7 @@ from ativos_user.models import AtivosUser
 # Create your views here.
 def cadastro(request):
     if request.user.is_authenticated:
-        return redirect('index')
+        return redirect('favoritos') # Redirecionar para favoritos se já logado
     if request.method == "POST":
         nome = request.POST.get("nome")
         email = request.POST.get("email")
@@ -30,13 +30,13 @@ def cadastro(request):
         usuario = User.objects.create_user(username=nome, email=email, password=senha)
         usuario.save()
         messages.add_message(request, constants.SUCCESS, f'Cadastro realizado com sucesso, {nome}, faça login para acesso total')
-        return redirect("login")
+        return redirect("login") # Redirecionar para login após cadastro
     return render(request, "cadastro.html")
 
 
 def login(request):
     if request.user.is_authenticated:
-        return redirect('index')
+        return redirect('favoritos') # Redirecionar para favoritos se já logado
     if request.method == "POST":
         nome = request.POST.get("nome")
         senha = request.POST.get("senha")
@@ -48,7 +48,7 @@ def login(request):
         if usuario is not None:
             auth.login(request, usuario)
             messages.add_message(request, constants.SUCCESS, 'Login realizado com sucesso')
-            return redirect("index")
+            return redirect("favoritos") # Redirecionar para favoritos após login
         else:
             messages.add_message(request, constants.WARNING, 'Usuário ou senha invalidos, faça cadastro caso nao tenha conta registrada')
             return redirect('cadastro')
@@ -59,7 +59,7 @@ def sair(request):
     if not request.user.is_authenticated:
         return redirect("login")
     auth.logout(request)
-    return redirect("index")
+    return redirect("home") # Redirecionar para a nova home (login) após sair
 
 from django.views.decorators.http import require_POST
 

@@ -12,6 +12,16 @@ def index(request):
         ativos = AtivosList.objects.filter(Q(cod_ativo__icontains=busca) | Q(nome_empresa__icontains=busca))
     else:
         ativos = AtivosList.objects.all()
+    
+    # Adicionar informação de monitoramento para cada ativo
+    if request.user.is_authenticated:
+        monitored_assets_ids = AtivosUser.objects.filter(user=request.user).values_list('ativo__id', flat=True)
+        for ativo in ativos:
+            ativo.is_monitored = ativo.id in monitored_assets_ids
+    else:
+        for ativo in ativos:
+            ativo.is_monitored = False # Não monitorado se não logado
+
     paginacao = Paginator(ativos, 15)
     page = request.GET.get('page')
     ativos_por_pagina = paginacao.get_page(page)
