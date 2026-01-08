@@ -71,10 +71,13 @@
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#configModal-{{ ativo.id }}">
                             Configurar
                         </button>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ ativo.id }}">
+                            Excluir
+                        </button>
                     </td>
                 </tr>
 
-                <!-- Modal para cada ativo -->
+                <!-- Modal para Configurar -->
                 <div class="modal fade" id="configModal-{{ ativo.id }}" tabindex="-1" aria-labelledby="configModalLabel-{{ ativo.id }}" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -106,6 +109,29 @@
                                         {{ ativo.form.em_carteira.label_tag }}
                                     </div>
                                     <button type="submit" class="btn btn-success">Salvar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal para Confirmar Exclusão -->
+                <div class="modal fade" id="confirmDeleteModal-{{ ativo.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ ativo.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmDeleteModalLabel-{{ ativo.id }}">Confirmar Exclusão</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Tem certeza que deseja excluir o ativo <strong>{{ ativo.ativo.cod_ativo }}</strong>?</p>
+                                <form action="{% url 'ativos_user:excluir_ativo' ativo.id %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="senha_confirmacao-{{ ativo.id }}" class="form-label">Confirme sua senha:</label>
+                                        <input type="password" class="form-control" id="senha_confirmacao-{{ ativo.id }}" name="senha_confirmacao" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">Excluir Ativo</button>
                                 </form>
                             </div>
                         </div>

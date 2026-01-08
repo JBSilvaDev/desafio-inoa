@@ -201,6 +201,35 @@ def update_ativo_config(request, ativo_id):
         
     return redirect('ativos_user:carteira')
 
+    return redirect('ativos_user:carteira')
+
+@require_POST
+@login_required
+def excluir_ativo(request, ativo_user_id):
+    ativo_user = get_object_or_404(AtivosUser, id=ativo_user_id, user=request.user)
+    senha_confirmacao = request.POST.get('senha_confirmacao')
+
+    if not request.user.check_password(senha_confirmacao):
+        messages.add_message(request, constants.ERROR, 'Senha incorreta. O ativo não foi excluído.')
+        return redirect('ativos_user:home_ativos')
+
+    # Armazenar o ativo_obj antes de excluir ativo_user
+    ativo_obj = ativo_user.ativo
+    cod_ativo = ativo_obj.cod_ativo
+
+    # Excluir o AtivosUser
+    ativo_user.delete()
+    messages.add_message(request, constants.SUCCESS, f'Ativo {cod_ativo} removido do seu monitoramento.')
+
+    # Verificar se o Ativo associado ainda tem outras referências
+    # Se não houver mais AtivosUser ou PrecoAtivo associados a este Ativo, excluí-lo também
+    if not AtivosUser.objects.filter(ativo=ativo_obj).exists() and \
+       not PrecoAtivo.objects.filter(ativo=ativo_obj).exists():
+        ativo_obj.delete()
+        messages.add_message(request, constants.INFO, f'Ativo {cod_ativo} (global) também foi removido do banco de dados.')
+
+    return redirect('ativos_user:home_ativos')
+
 @require_POST
 @login_required
 def add_manual_asset(request):
@@ -216,7 +245,7 @@ def add_manual_asset(request):
         return redirect('ativos_user:carteira')
 
     # Criar ou obter o novo modelo Ativo
-    ativo_obj, created_ativo = Ativo.objects.get_or_create( # Alterado para o novo modelo Ativo
+    ativo_obj, created_ativo = Ativo.objects.get_or_create(
         cod_ativo=cod_ativo,
         defaults={'nome_empresa': nome_empresa}
     )
@@ -227,7 +256,7 @@ def add_manual_asset(request):
     # Tenta encontrar ou criar o ativo na lista de monitoramento do usuário
     ativo_user, created_user = AtivosUser.objects.get_or_create(
         user=user,
-        ativo=ativo_obj, # Associar ao novo modelo Ativo
+        ativo=ativo_obj,
         defaults={'favorito': favorito, 'em_carteira': em_carteira}
     )
 
