@@ -39,7 +39,7 @@ def detalhes_ativos(request, id):
         }
 
     user_id = request.user.id
-    ativo_fc = AtivosUser.objects.filter(cod_ativo=ativo.cod_ativo, user_id=user_id).first()
+    ativo_fc = AtivosUser.objects.filter(ativo__cod_ativo=ativo.cod_ativo, user_id=user_id).first()
 
     if ativo_fc and ativo_fc.variacao_percent is not None:
         lasts['variacao'] = f'{ativo_fc.variacao_percent/100:.1%}'
