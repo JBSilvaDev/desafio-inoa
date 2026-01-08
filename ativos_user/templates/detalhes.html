@@ -68,7 +68,7 @@ Detalhes do Ativo
                     }
                 });
             } else {
-                $('#plot').html('<p class="text-warning">Não há dados históricos disponíveis para exibir o gráfico.</p>');
+                $('#plot').html('<center><p class="text-warning">Não há dados históricos disponíveis para exibir o gráfico.</p></center>');
             }
         });
     </script>
@@ -85,24 +85,24 @@ Detalhes do Ativo
                     <form action="{% url 'ativos_user:update_ativo_config' ativo_user.id %}" method="post">
                         {% csrf_token %}
                         <div class="mb-3">
-                            {{ ativo_user.form.limite_superior.label_tag }}
-                            {{ ativo_user.form.limite_superior }}
+                            {{ form.limite_superior.label_tag }} {# Alterado aqui #}
+                            {{ form.limite_superior }} {# Alterado aqui #}
                         </div>
                         <div class="mb-3">
-                            {{ ativo_user.form.limite_inferior.label_tag }}
-                            {{ ativo_user.form.limite_inferior }}
+                            {{ form.limite_inferior.label_tag }} {# Alterado aqui #}
+                            {{ form.limite_inferior }} {# Alterado aqui #}
                         </div>
                         <div class="mb-3">
-                            {{ ativo_user.form.intervalo_verificacao.label_tag }}
-                            {{ ativo_user.form.intervalo_verificacao }}
+                            {{ form.intervalo_verificacao.label_tag }} {# Alterado aqui #}
+                            {{ form.intervalo_verificacao }} {# Alterado aqui #}
                         </div>
                         <div class="mb-3 form-check">
-                            {{ ativo_user.form.favorito }}
-                            {{ ativo_user.form.favorito.label_tag }}
+                            {{ form.favorito }} {# Alterado aqui #}
+                            {{ form.favorito.label_tag }} {# Alterado aqui #}
                         </div>
                         <div class="mb-3 form-check">
-                            {{ ativo_user.form.em_carteira }}
-                            {{ ativo_user.form.em_carteira.label_tag }}
+                            {{ form.em_carteira }} {# Alterado aqui #}
+                            {{ form.em_carteira.label_tag }} {# Alterado aqui #}
                         </div>
                         <button type="submit" class="btn btn-success">Salvar</button>
                     </form>
