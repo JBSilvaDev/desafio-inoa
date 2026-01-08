@@ -50,18 +50,26 @@ def get_stock_history(stock_code, range_param='3mo'):
     url = f"https://brapi.dev/api/quote/{stock_code}/history?range={range_param}&interval=1d&token={api_key}"
     
     try:
-        response = requests.get(url, verify=False) # Usar verify=False para evitar problemas de SSL
+        response = requests.get(url, verify=False)
         response.raise_for_status()
-        data = response.json()
+        
+        # Tentar decodificar JSON
+        try:
+            data = response.json()
+        except json.JSONDecodeError:
+            print(f"Erro de decodificação JSON para {stock_code}. Resposta da API: {response.text}")
+            return []
         
         if data and data['results'] and data['results'][0]['historicalData']:
             historical_data = data['results'][0]['historicalData']
-            # Filtrar dados para garantir que 'close' e 'date' existam
             filtered_data = [
                 {'date': item['date'], 'close': item['close']}
                 for item in historical_data if 'close' in item and 'date' in item
             ]
             return filtered_data
+        else:
+            print(f"Dados históricos vazios ou malformados para {stock_code}. Resposta da API: {data}")
+            return []
     except requests.exceptions.RequestException as e:
         print(f"Erro ao buscar histórico da API para {stock_code}: {e}")
     return []
