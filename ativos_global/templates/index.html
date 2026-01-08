@@ -32,7 +32,7 @@ Home Page
               <td>{{ ativo.nome_empresa }}</td>
               {% if user.is_authenticated %}
               <td>
-                <form method="POST" action="{% url 'update_wallet' ativo.id %}">
+                <form method="POST" action="{% url 'auth_user:update_wallet' ativo.id %}"> {# Usar namespace #}
                     {% csrf_token %}
                     {% if ativo.is_monitored %}
                         <button type="submit" class="btn btn-danger btn-sm">Remover do Monitoramento</button>
