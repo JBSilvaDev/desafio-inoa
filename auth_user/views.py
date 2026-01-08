@@ -1,7 +1,11 @@
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.models import User
+from django.contrib import auth
+from django.contrib import messages
 from django.contrib.messages import constants
 # from ativos_global.models import AtivosList # Removido
-from django.core.paginator import Paginator
-from ativos_user.models import AtivosUser
+# from django.core.paginator import Paginator # Removido
+# from ativos_user.models import AtivosUser # Removido
 
 
 # Create your views here.
