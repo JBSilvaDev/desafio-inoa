@@ -77,7 +77,9 @@ Detalhes do Ativo
             let currentApi = '{{ api_source }}';
 
             function plotChart(chartData) {
-                if (chartData && chartData.x && chartData.x.length > 0 && chartData.y && chartData.y.length > 0) {
+                if (chartData && chartData.error) {
+                    $(plotDiv).html('<center><p class="text-danger">' + chartData.error + '</p></center>');
+                } else if (chartData && chartData.x && chartData.x.length > 0 && chartData.y && chartData.y.length > 0) {
                     const trace = {
                         x: chartData.x.map(d => (typeof d === 'string' ? new Date(d) : new Date(d * 1000))),
                         y: chartData.y,
