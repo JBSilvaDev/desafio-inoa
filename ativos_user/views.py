@@ -226,14 +226,12 @@ def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
             response.raise_for_status()
             data = response.json()
 
-            if 'Information' in data:
-                error_message = f"Erro da API Alpha Vantage: {data['Information']}"
-                print(error_message)
-                return {'error': error_message}
-            if 'Error Message' in data:
-                error_message = f"Erro da API Alpha Vantage: {data['Error Message']}"
-                print(error_message)
-                return {'error': error_message}
+            # Se a API retornar um erro conhecido (limite, etc.), pule para a próxima função
+            if 'Information' in data or 'Error Message' in data:
+                error_message = data.get('Information', data.get('Error Message', 'Erro desconhecido da API'))
+                print(f"Erro da API Alpha Vantage com {current_function}: {error_message}")
+                last_error = error_message # Salva o último erro
+                continue # Tenta a próxima função
 
             # Tentar encontrar a chave da série temporal
             time_series_key = None
@@ -249,13 +247,21 @@ def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
             if time_series_key and time_series_key in data:
                 historical_data = data[time_series_key]
                 used_function = current_function
+                last_error = None # Limpa o erro se bem-sucedido
                 break # Dados encontrados, sair do loop
             else:
                 print(f"Chave de série temporal '{time_series_key}' não encontrada para {current_function}. Tentando próxima função.")
+                last_error = f"Chave de série temporal '{time_series_key}' não encontrada."
+
 
         except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
             print(f"Erro ao buscar ou processar histórico da Alpha Vantage para {stock_code} com {current_function}: {e}")
+            last_error = str(e)
             # Continuar para a próxima função se houver um erro de requisição/JSON
+    
+    # Se após todas as tentativas, ainda houver um erro, retorne-o
+    if last_error:
+        return {'error': f"Erro final da API Alpha Vantage: {last_error}"}
 
     if not historical_data:
         return {'error': f"Nenhum dado histórico encontrado para {stock_code} com os intervalos solicitados."}
