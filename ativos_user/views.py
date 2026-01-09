@@ -189,12 +189,16 @@ def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
     if 'min' in interval_param:
         function = 'TIME_SERIES_INTRADAY'
         interval = interval_param
+        adjusted = False
     elif interval_param == '1d':
-        function = 'TIME_SERIES_DAILY'
+        function = 'TIME_SERIES_DAILY_ADJUSTED'
+        adjusted = True
     elif interval_param == '1wk':
-        function = 'TIME_SERIES_WEEKLY'
+        function = 'TIME_SERIES_WEEKLY_ADJUSTED'
+        adjusted = True
     elif interval_param == '1mo':
-        function = 'TIME_SERIES_MONTHLY'
+        function = 'TIME_SERIES_MONTHLY_ADJUSTED'
+        adjusted = True
     else:
         return []
 
@@ -217,8 +221,10 @@ def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
 
         historical_data = data[time_series_key]
         
+        close_key = '5. adjusted close' if adjusted else '4. close'
+
         return [
-            {'date': int(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S' if 'min' in interval_param else '%Y-%m-%d').timestamp()), 'close': float(item['4. close'])}
+            {'date': int(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S' if 'min' in interval_param else '%Y-%m-%d').timestamp()), 'close': float(item[close_key])}
             for date_str, item in historical_data.items()
         ]
 
