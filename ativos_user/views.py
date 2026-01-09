@@ -216,7 +216,9 @@ def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
         # Encontrar a chave correta para os dados de série temporal
         time_series_key = next((key for key in data if 'Time Series' in key), None)
         if not time_series_key:
-            print(f"Nenhuma chave de série temporal encontrada na resposta da Alpha Vantage para {stock_code}")
+            print(f"Nenhuma chave de série temporal encontrada na resposta da Alpha Vantage para {stock_code}. Resposta: {data}")
+            if 'Note' in data:
+                print(f"Nota da API Alpha Vantage: {data['Note']}")
             return []
 
         historical_data = data[time_series_key]
@@ -255,7 +257,7 @@ def detalhes_ativo(request, ativo_user_id):
     }
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse(chart_data)
+        return JsonResponse({'chart_data': chart_data, 'stock_data': stock_data})
 
     form = AtivoUserForm(instance=ativo_user)
 
