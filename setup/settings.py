@@ -168,3 +168,12 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'jbsilva.bkp@gmail.com') # 
 # Obtenha sua chave em https://brapi.dev/
 BRAPI_API_KEY = os.getenv('BRAPI_API_KEY', 'SUA_CHAVE_DA_API_BRAPI')
 ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY', 'SUA_CHAVE_DA_API_ALPHA_VANTAGE')
+
+# Configuração de Cache
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",  # para dev
+        "LOCATION": "unique-snowflake",
+        "TIMEOUT": None,  # deixamos TTL por chave na hora de setar
+    }
+}

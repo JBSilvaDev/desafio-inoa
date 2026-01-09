@@ -10,6 +10,8 @@ import requests
 import json
 from django.http import JsonResponse
 from datetime import datetime, timedelta
+from django.core.cache import cache # Adicionado
+from .utils.cache import cache_get_or_set # Adicionado
 
 from .models import Ativo, AtivosUser, PrecoAtivo # Importar o novo modelo Ativo e PrecoAtivo
 from .forms import AtivoUserForm
@@ -78,6 +80,40 @@ def get_stock_history(stock_code, range_param='1mo', interval_param='1d'):
     except requests.exceptions.RequestException as e:
         print(f"Erro ao buscar histórico da API para {stock_code}: {e}")
     return []
+
+# --- Funções cacheadas para Alpha Vantage ---
+def _av_build_quote(stock_code):
+    return get_stock_data_alpha_vantage(stock_code)
+
+def _av_build_history(stock_code, interval_param):
+    return get_stock_history_alpha_vantage(stock_code, interval_param)
+
+def av_get_quote_cached(stock_code, ttl=60):  # 60s para quote “atual”
+    key = f"av:quote:{stock_code.upper()}"
+    return cache_get_or_set(key, lambda: _av_build_quote(stock_code), ttl)[0]
+
+def av_get_history_cached(stock_code, interval_param, ttl_map=None):
+    if ttl_map is None:
+        ttl_map = {"60min": 15*60, "1d": 60*60, "1wk": 2*60*60, "1mo": 6*60*60}
+    ttl = ttl_map.get(interval_param, 60*60)
+    key = f"av:hist:{stock_code.upper()}:{interval_param}"
+    return cache_get_or_set(key, lambda: _av_build_history(stock_code, interval_param), ttl)[0]
+
+# --- Funções cacheadas para brapi ---
+def _brapi_build_quote(stock_code):
+    return get_stock_data(stock_code)
+
+def _brapi_build_history(stock_code, range_param, interval_param):
+    return get_stock_history(stock_code, range_param, interval_param)
+
+def brapi_get_quote_cached(stock_code, ttl=60):
+    key = f"brapi:quote:{stock_code.upper()}"
+    return cache_get_or_set(key, lambda: _brapi_build_quote(stock_code), ttl)[0]
+
+def brapi_get_history_cached(stock_code, range_param, interval_param, ttl_seconds=15*60):
+    key = f"brapi:hist:{stock_code.upper()}:{range_param}:{interval_param}"
+    return cache_get_or_set(key, lambda: _brapi_build_history(stock_code, range_param, interval_param), ttl_seconds)[0]
+
 
 @login_required(login_url='login')
 def carteira(request): # Renomeado de favoritos para carteira
@@ -216,12 +252,16 @@ def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
         response.raise_for_status()
         data = response.json()
 
-        if 'Information' in data:
-            error_message = f"Erro da API Alpha Vantage: {data['Information']}"
-            print(error_message)
-            return {'error': error_message}
-        if 'Error Message' in data:
-            error_message = f"Erro da API Alpha Vantage: {data['Error Message']}"
+        print(f"Resposta completa da Alpha Vantage para {stock_code} ({function_base}): {json.dumps(data, indent=2)}")
+
+        if 'Information' in data or 'Error Message' in data: # Modificado aqui
+            # tenta fallback do cache para não quebrar a página
+            key = f"av:hist:{stock_code.upper()}:{interval_param}"
+            cached = cache.get(key)
+            if cached:
+                print(f"Retornando dados históricos do cache para {stock_code} ({interval_param}) devido a erro da API.")
+                return cached
+            error_message = f"Erro da API Alpha Vantage: {data.get('Information') or data.get('Error Message')}"
             print(error_message)
             return {'error': error_message}
 
@@ -273,10 +313,10 @@ def detalhes_ativo(request, ativo_user_id):
     interval_param = request.GET.get('interval', '1d')
 
     if api_source == 'alpha':
-        stock_data = get_stock_data_alpha_vantage(cod_ativo)
-        historical_data_result = get_stock_history_alpha_vantage(cod_ativo, interval_param)
+        stock_data = av_get_quote_cached(cod_ativo, ttl=60)  # evita múltiplas chamadas
+        historical_data_result = av_get_history_cached(cod_ativo, interval_param)
         
-        if isinstance(historical_data_result, dict) and 'error' in historical_data_result:
+        if isinstance(historical_data_result, dict) and historical_data_result.get('error'):
             chart_data = {'error': historical_data_result['error']}
             historical_data = [] # Garante que historical_data seja uma lista
         else:
@@ -288,8 +328,8 @@ def detalhes_ativo(request, ativo_user_id):
                 'title': f'Histórico de Preços de {cod_ativo}',
             }
     else: # Padrão é brapi
-        stock_data = get_stock_data(cod_ativo)
-        historical_data = get_stock_history(cod_ativo, range_param, interval_param)
+        stock_data = brapi_get_quote_cached(cod_ativo, ttl=60)
+        historical_data = brapi_get_history_cached(cod_ativo, range_param, interval_param)
         chart_data = {
             'x': [item['date'] for item in historical_data],
             'y': [item['close'] for item in historical_data],
