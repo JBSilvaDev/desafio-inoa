@@ -43,16 +43,28 @@ Detalhes do Ativo
     </div>
 
     <div id="chart-container" class="container mt-4">
-        <div class="btn-group" role="group" aria-label="Intervalos do Gráfico">
-            <button type="button" class="btn btn-secondary" data-range="5d" data-interval="1d">Dia</button>
-            <button type="button" class="btn btn-secondary" data-range="1mo" data-interval="1wk">Semana</button>
-            <button type="button" class="btn btn-secondary" data-range="1mo" data-interval="1d">Mês</button>
-            <button type="button" class="btn btn-secondary" data-range="3mo" data-interval="1d">3 Meses</button>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="api-switcher" data-bs-toggle="dropdown" aria-expanded="false">
+                    API: <span id="api-name">brapi</span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="api-switcher">
+                    <li><a class="dropdown-item" href="#" data-api="brapi">brapi</a></li>
+                    <li><a class="dropdown-item" href="#" data-api="alpha">Alpha Vantage</a></li>
+                </ul>
+            </div>
+            <div class="btn-group" role="group" aria-label="Intervalos do Gráfico">
+                <button type="button" class="btn btn-secondary" id="btn-hora" data-interval="60min">Hora</button>
+                <button type="button" class="btn btn-secondary" data-range="5d" data-interval="1d">Dia</button>
+                <button type="button" class="btn btn-secondary" data-range="1mo" data-interval="1wk">Semana</button>
+                <button type="button" class="btn btn-secondary" data-range="1mo" data-interval="1d">Mês</button>
+                <button type="button" class="btn btn-secondary" data-range="3mo" data-interval="1d">3 Meses</button>
+            </div>
         </div>
         <div id="plot-loading" style="display: none; text-align: center; padding: 20px;">
             <p>Carregando...</p>
         </div>
-        <div id="plot"></div>
+        <div id="plot" style="width: 100%; height: 450px;"></div>
     </div>
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -62,30 +74,54 @@ Detalhes do Ativo
         $(document).ready(function () {
             const initialChartData = JSON.parse('{{ chart_data_json|escapejs }}');
             const plotDiv = document.getElementById('plot');
+            let currentApi = '{{ api_source }}';
 
             function plotChart(chartData) {
                 if (chartData && chartData.x && chartData.x.length > 0 && chartData.y && chartData.y.length > 0) {
-                    Plotly.newPlot(plotDiv, [{
-                        x: chartData.x.map(dateString => new Date(dateString * 1000)),
+                    const trace = {
+                        x: chartData.x.map(d => (typeof d === 'string' ? new Date(d) : new Date(d * 1000))),
                         y: chartData.y,
                         type: 'line',
                         name: chartData.title,
-                    }], {
+                    };
+                    const layout = {
                         title: chartData.title,
-                        xaxis: { title: 'Data' },
-                        yaxis: { title: 'Preço (R$)' }
-                    });
+                        xaxis: { title: 'Data', automargin: true },
+                        yaxis: { title: 'Preço (R$)', automargin: true },
+                        autosize: true,
+                    };
+                    Plotly.newPlot(plotDiv, [trace], layout, { responsive: true });
                 } else {
                     $(plotDiv).html('<center><p class="text-warning">Não há dados históricos disponíveis para exibir o gráfico.</p></center>');
                 }
             }
 
+            function updateHoraButtonState() {
+                $('#btn-hora').prop('disabled', currentApi === 'brapi');
+            }
+
             plotChart(initialChartData);
+            updateHoraButtonState();
+            $('#api-name').text(currentApi === 'alpha' ? 'Alpha Vantage' : 'brapi');
+
+
+            $('.dropdown-item').click(function (e) {
+                e.preventDefault();
+                currentApi = $(this).data('api');
+                $('#api-name').text($(this).text());
+                updateHoraButtonState();
+                // Disparar um clique no botão de intervalo ativo para recarregar o gráfico
+                $('.btn-group .btn.active').click();
+            });
 
             $('.btn-group .btn').click(function () {
                 const range = $(this).data('range');
                 const interval = $(this).data('interval');
-                const url = `{% url 'ativos_user:detalhes_ativo' ativo_user.id %}?range=${range}&interval=${interval}`;
+                let url = `{% url 'ativos_user:detalhes_ativo' ativo_user.id %}?api=${currentApi}&interval=${interval}`;
+
+                if (currentApi === 'brapi') {
+                    url += `&range=${range}`;
+                }
 
                 $('#plot').hide();
                 $('#plot-loading').show();
@@ -107,6 +143,14 @@ Detalhes do Ativo
                         $('#plot').html('<center><p class="text-danger">Erro ao carregar os dados do gráfico.</p></center>').show();
                     }
                 });
+
+                // Lidar com a classe 'active' para os botões
+                $('.btn-group .btn').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            $(window).on('resize', function() {
+                Plotly.Plots.resize(plotDiv);
             });
         });
     </script>
