@@ -79,7 +79,11 @@ Detalhes do Ativo
             function plotChart(chartData) {
                 console.log('Chart data:', chartData);
                 if (chartData && chartData.error) {
-                    $(plotDiv).html('<center><p class="text-danger">' + chartData.error + '</p></center>');
+                    let errorMessage = chartData.error;
+                    if (typeof errorMessage === 'string' && errorMessage.includes('Thank you for using Alpha Vantage')) {
+                        errorMessage = 'Limite da API Alpha Vantage atingido. Por favor, tente novamente mais tarde ou mude para a API brapi.';
+                    }
+                    $(plotDiv).html('<center><p class="text-danger">' + errorMessage + '</p></center>');
                 } else if (chartData && chartData.x && chartData.x.length > 0 && chartData.y && chartData.y.length > 0) {
                     
                     const dates = chartData.x.map(d => (typeof d === 'string' ? new Date(d) : new Date(d * 1000)));
