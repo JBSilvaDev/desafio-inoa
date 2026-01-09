@@ -49,7 +49,8 @@ def get_stock_data(stock_code):
             }
     except requests.exceptions.RequestException as e:
         print(f"Erro ao buscar dados da API para {stock_code}: {e}")
-    return None
+        return {'error': f"Erro ao buscar dados atuais da Brapi para {stock_code}: {e}"}
+    return {'error': f"Nenhum dado encontrado para {stock_code} na Brapi."}
 
 def get_stock_history(stock_code, range_param='1mo', interval_param='1d'):
     api_key = settings.BRAPI_API_KEY
@@ -75,11 +76,14 @@ def get_stock_history(stock_code, range_param='1mo', interval_param='1d'):
                 for item in historical_data if 'close' in item and 'date' in item
             ]
         else:
-            print(f"Dados históricos vazios ou malformados para {stock_code}. Resposta da API: {data}")
-            return []
+            error_message = f"Dados históricos vazios ou malformados para {stock_code}. Resposta da API: {data}"
+            print(error_message)
+            return {'error': error_message}
     except requests.exceptions.RequestException as e:
-        print(f"Erro ao buscar histórico da API para {stock_code}: {e}")
-    return []
+        error_message = f"Erro ao buscar histórico da API para {stock_code}: {e}"
+        print(error_message)
+        return {'error': error_message}
+    return {'error': f"Nenhum dado histórico encontrado para {stock_code} na Brapi."}
 
 # --- Funções cacheadas para Alpha Vantage ---
 def _av_build_quote(stock_code):
@@ -327,22 +331,43 @@ def detalhes_ativo(request, ativo_user_id):
                 'title': f'Histórico de Preços de {cod_ativo}',
             }
     else: # Padrão é brapi
-        stock_data = brapi_get_quote_cached(cod_ativo, ttl=60)
-        historical_data = brapi_get_history_cached(cod_ativo, range_param, interval_param)
-        
-        # Atualiza o preço da tabela com o último preço de fechamento do histórico para consistência
-        if historical_data:
-            latest_close_price = historical_data[-1]['close']
-            if stock_data:
-                stock_data['regularMarketPrice'] = latest_close_price
-            else: # Se stock_data for None, cria um dicionário básico com o preço
-                stock_data = {'regularMarketPrice': latest_close_price}
+        stock_data_result = brapi_get_quote_cached(cod_ativo, ttl=60)
+        historical_data_result = brapi_get_history_cached(cod_ativo, range_param, interval_param)
 
-        chart_data = {
-            'x': [item['date'] for item in historical_data],
-            'y': [item['close'] for item in historical_data],
-            'title': f'Histórico de Preços de {cod_ativo}',
-        }
+        stock_data = None
+        historical_data = []
+        chart_data = {}
+
+        if isinstance(stock_data_result, dict) and stock_data_result.get('error'):
+            stock_data = {'error': stock_data_result['error']}
+            chart_data = {'error': stock_data_result['error']} # Propaga o erro para o gráfico também
+        else:
+            stock_data = stock_data_result
+
+        if isinstance(historical_data_result, dict) and historical_data_result.get('error'):
+            historical_data = []
+            chart_data = {'error': historical_data_result['error']} # Sobrescreve se houver erro no histórico
+        else:
+            historical_data = historical_data_result
+            
+            # Atualiza o preço da tabela com o último preço de fechamento do histórico para consistência
+            if historical_data:
+                latest_close_price = historical_data[-1]['close']
+                if stock_data and not stock_data.get('error'): # Só atualiza se stock_data não tiver erro
+                    stock_data['regularMarketPrice'] = latest_close_price
+                elif not stock_data: # Se stock_data for None, cria um dicionário básico com o preço
+                    stock_data = {'regularMarketPrice': latest_close_price}
+
+            chart_data = {
+                'x': [item['date'] for item in historical_data],
+                'y': [item['close'] for item in historical_data],
+                'title': f'Histórico de Preços de {cod_ativo}',
+            }
+        
+        # Se não houver dados históricos e nenhum erro específico, ainda pode ser um erro
+        if not historical_data and not chart_data.get('error'):
+            chart_data = {'error': 'Não há dados históricos disponíveis para exibir o gráfico.'}
+
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'chart_data': chart_data, 'stock_data': stock_data})
