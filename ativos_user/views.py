@@ -324,7 +324,6 @@ def detalhes_ativo(request, ativo_user_id):
             chart_data = {
                 'x': [item['date'] for item in historical_data],
                 'y': [item['close'] for item in historical_data],
-                'volume': [item['volume'] for item in historical_data],
                 'title': f'Histórico de Preços de {cod_ativo}',
             }
     else: # Padrão é brapi
