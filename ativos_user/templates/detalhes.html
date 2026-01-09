@@ -24,9 +24,9 @@ Detalhes do Ativo
                     <tr>
                         <td>{{ ativo_user.ativo.cod_ativo }}</td>
                         <td>{{ ativo_user.ativo.nome_empresa }}</td>
-                        <td>R$ {{ stock_data.regularMarketPrice|default:"N/A" }}</td>
-                        <td>{{ stock_data.regularMarketVolume|default:"N/A" }}</td>
-                        <td>{{ stock_data.regularMarketChangePercent|default:"N/A" }}%</td>
+                        <td id="stock-price">R$ {{ stock_data.regularMarketPrice|default:"N/A" }}</td>
+                        <td id="stock-volume">{{ stock_data.regularMarketVolume|default:"N/A" }}</td>
+                        <td id="stock-change-percent">{{ stock_data.regularMarketChangePercent|default:"N/A" }}%</td>
                     </tr>
                 </tbody>
             </table>
@@ -57,7 +57,7 @@ Detalhes do Ativo
                 <button type="button" class="btn btn-secondary" id="btn-hora" data-interval="60min">Hora</button>
                 <button type="button" class="btn btn-secondary" data-range="5d" data-interval="1d">Dia</button>
                 <button type="button" class="btn btn-secondary" data-range="1mo" data-interval="1wk">Semana</button>
-                <button type="button" class="btn btn-secondary" data-range="1mo" data-interval="1d">Mês</button>
+                <button type="button" class="btn btn-secondary active" data-range="1mo" data-interval="1d">Mês</button>
                 <button type="button" class="btn btn-secondary" data-range="3mo" data-interval="1d">3 Meses</button>
             </div>
         </div>
@@ -94,6 +94,12 @@ Detalhes do Ativo
                 } else {
                     $(plotDiv).html('<center><p class="text-warning">Não há dados históricos disponíveis para exibir o gráfico.</p></center>');
                 }
+            }
+
+            function updateTable(stockData) {
+                $('#stock-price').text('R$ ' + (stockData.regularMarketPrice || 'N/A'));
+                $('#stock-volume').text(stockData.regularMarketVolume || 'N/A');
+                $('#stock-change-percent').text((stockData.regularMarketChangePercent || 'N/A') + '%');
             }
 
             function updateHoraButtonState() {
@@ -133,7 +139,8 @@ Detalhes do Ativo
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     success: function (data) {
-                        plotChart(data);
+                        plotChart(data.chart_data);
+                        updateTable(data.stock_data);
                         $('#plot-loading').hide();
                         $('#plot').show();
                     },
