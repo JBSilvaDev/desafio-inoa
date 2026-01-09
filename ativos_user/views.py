@@ -103,20 +103,9 @@ def av_get_history_cached(stock_code, interval_param, ttl_map=None):
     key = f"av:hist:{stock_code.upper()}:{interval_param}"
     return cache_get_or_set(key, lambda: _av_build_history(stock_code, interval_param), ttl)[0]
 
-# --- Funções cacheadas para brapi ---
-def _brapi_build_quote(stock_code):
-    return get_stock_data(stock_code)
 
-def _brapi_build_history(stock_code, range_param, interval_param):
-    return get_stock_history(stock_code, range_param, interval_param)
 
-def brapi_get_quote_cached(stock_code, ttl=60):
-    key = f"brapi:quote:{stock_code.upper()}"
-    return cache_get_or_set(key, lambda: _brapi_build_quote(stock_code), ttl)[0]
 
-def brapi_get_history_cached(stock_code, range_param, interval_param, ttl_seconds=15*60):
-    key = f"brapi:hist:{stock_code.upper()}:{range_param}:{interval_param}"
-    return cache_get_or_set(key, lambda: _brapi_build_history(stock_code, range_param, interval_param), ttl_seconds)[0]
 
 
 @login_required(login_url='login')
@@ -331,8 +320,8 @@ def detalhes_ativo(request, ativo_user_id):
                 'title': f'Histórico de Preços de {cod_ativo}',
             }
     else: # Padrão é brapi
-        stock_data_result = brapi_get_quote_cached(cod_ativo, ttl=60)
-        historical_data_result = brapi_get_history_cached(cod_ativo, range_param, interval_param)
+        stock_data_result = get_stock_data(cod_ativo)
+        historical_data_result = get_stock_history(cod_ativo, range_param, interval_param)
 
         stock_data = None
         historical_data = []
