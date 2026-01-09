@@ -49,8 +49,8 @@ def get_stock_data(stock_code):
             }
     except requests.exceptions.RequestException as e:
         print(f"Erro ao buscar dados da API para {stock_code}: {e}")
-        return {'error': f"Erro ao buscar dados atuais da Brapi para {stock_code}: {e}"}
-    return {'error': f"Nenhum dado encontrado para {stock_code} na Brapi."}
+        return {'error': f"Erro ao buscar dados atuais da brapi para {stock_code}: {e}"}
+    return {'error': f"Nenhum dado encontrado para {stock_code} na brapi."}
 
 def get_stock_history(stock_code, range_param='1mo', interval_param='1d'):
     api_key = settings.BRAPI_API_KEY
@@ -83,7 +83,7 @@ def get_stock_history(stock_code, range_param='1mo', interval_param='1d'):
         error_message = f"Erro ao buscar histórico da API para {stock_code}: {e}"
         print(error_message)
         return {'error': error_message}
-    return {'error': f"Nenhum dado histórico encontrado para {stock_code} na Brapi."}
+    return {'error': f"Nenhum dado histórico encontrado para {stock_code} na brapi."}
 
 # --- Funções cacheadas para Alpha Vantage ---
 def _av_build_quote(stock_code):
