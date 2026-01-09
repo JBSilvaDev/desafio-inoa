@@ -187,6 +187,7 @@ Detalhes do Ativo
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     success: function (data) {
+                        $(plotDiv).empty(); // Limpa o conteúdo anterior do gráfico
                         plotChart(data.chart_data, currentRange); // Passar currentRange para plotChart
                         Plotly.Plots.resize(plotDiv); // Força o redimensionamento do gráfico após a atualização
                         updateTable(data.stock_data);
