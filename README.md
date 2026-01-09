@@ -16,12 +16,27 @@ Este projeto consiste no desenvolvimento de uma aplicação web utilizando o fra
 *   **Visualização Detalhada de Ativos:**
     *   **Página Home (`/ativos_user/`):** Exibe todos os ativos que o usuário está monitorando, com opções de busca e configuração rápida.
     *   **Minha Carteira (`/ativos_user/carteira/`):** Lista apenas os ativos marcados como "Em Carteira".
-    *   **Meus Favoritos (`/ativos_user/favoritos/`):** Apresenta somente os ativos definidos como "Favoritos".
+    *   **Meus Favoritos (`/ativos_user/favoritos/`): Apresenta somente os ativos definidos como "Favoritos".
     *   **Página de Detalhes (`/ativos_user/detalhes/<id>/`):** Oferece informações atuais do ativo (preço, volume, variação) e um gráfico interativo com o histórico de preços, utilizando dados da API `brapi.dev`.
 *   **Sistema de Monitoramento e Alertas por E-mail:**
     *   **Comando de Gerenciamento:** Um comando `manage.py monitor_ativos` verifica periodicamente os preços dos ativos configurados.
     *   **Alertas Inteligentes:** Envia e-mails de alerta para o investidor sugerindo compra (se o preço cruzar o limite inferior) ou venda (se o preço cruzar o limite superior).
     *   **Prevenção de Spam:** O sistema controla a frequência de envio de e-mails para o mesmo ativo, evitando notificações excessivas.
+
+## Melhorias Recentes
+
+Esta seção detalha as melhorias e correções implementadas para aprimorar a experiência do usuário e a robustez do sistema:
+
+*   **Gráfico Alpha Vantage Aprimorado:** O gráfico de histórico de preços da Alpha Vantage agora exibe apenas a linha de preço de fechamento, alinhando-se ao estilo de visualização da API Brapi para maior consistência.
+*   **Responsividade e Sincronização do Gráfico:**
+    *   Ajustes foram feitos para garantir que o gráfico mantenha a largura correta (equivalente à da tabela) e se redimensione adequadamente ao alternar entre diferentes intervalos de tempo ou APIs.
+    *   O gráfico agora é limpo explicitamente antes de renderizar novos dados ou mensagens de erro, evitando a persistência de informações antigas.
+*   **Consistência de Preços (API Brapi):** O valor do preço exibido na tabela para ativos da Brapi agora está sincronizado com o último preço de fechamento do gráfico, garantindo que ambos apresentem a mesma informação mais recente.
+*   **Tratamento de Erros da API Brapi:**
+    *   O sistema não utiliza mais cache para as chamadas da API Brapi, garantindo que os dados sejam sempre buscados em tempo real.
+    *   Melhorias no tratamento de erros asseguram que falhas na comunicação com a API Brapi (ex: chave inválida) sejam imediatamente detectadas e uma mensagem de erro apropriada seja exibida ao usuário, sem recorrer a dados antigos.
+*   **Tratamento de Erros da API Alpha Vantage:** Erros retornados pela API Alpha Vantage agora são cacheados por um curto período. Isso evita múltiplas chamadas desnecessárias à API em caso de falha, enquanto ainda informa o usuário sobre o problema.
+*   **Título do Gráfico Dinâmico:** O título do gráfico agora reflete corretamente a API (Alpha Vantage ou Brapi) que está sendo utilizada para exibir os dados.
 
 ## Configuração do Ambiente de Desenvolvimento
 
