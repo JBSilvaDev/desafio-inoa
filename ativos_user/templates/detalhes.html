@@ -134,28 +134,7 @@ Detalhes do Ativo
                         line: { color: '#1f77b4', width: 2 }
                     });
 
-                    // Se houver dados de volume (API Alpha Vantage)
-                    if (volumes && volumes.length > 0) { // Usar volumes filtrados
-                        traces.push({
-                            x: dates,
-                            y: volumes,
-                            type: 'bar',
-                            name: 'Volume',
-                            yaxis: 'y2',
-                            marker: { color: '#888888', opacity: 0.3 }
-                        });
-
-                        layout.yaxis2 = {
-                            title: 'Volume',
-                            overlaying: 'y',
-                            side: 'right',
-                            showgrid: false,
-                            automargin: true
-                        };
-                        layout.title = `${chartData.title} (Alpha Vantage)`;
-                    } else {
-                        layout.title = `${chartData.title} (brapi)`;
-                    }
+                    layout.title = `${chartData.title} (${currentApi === 'alpha' ? 'Alpha Vantage' : 'brapi'})`;
 
                     Plotly.newPlot(plotDiv, traces, layout, { responsive: true, useResizeHandler: true });
 
@@ -209,6 +188,7 @@ Detalhes do Ativo
                     },
                     success: function (data) {
                         plotChart(data.chart_data, currentRange); // Passar currentRange para plotChart
+                        Plotly.Plots.resize(plotDiv); // Força o redimensionamento do gráfico após a atualização
                         updateTable(data.stock_data);
                         $('#plot-loading').hide();
                         $('#plot').show();
