@@ -329,6 +329,15 @@ def detalhes_ativo(request, ativo_user_id):
     else: # Padrão é brapi
         stock_data = brapi_get_quote_cached(cod_ativo, ttl=60)
         historical_data = brapi_get_history_cached(cod_ativo, range_param, interval_param)
+        
+        # Atualiza o preço da tabela com o último preço de fechamento do histórico para consistência
+        if historical_data:
+            latest_close_price = historical_data[-1]['close']
+            if stock_data:
+                stock_data['regularMarketPrice'] = latest_close_price
+            else: # Se stock_data for None, cria um dicionário básico com o preço
+                stock_data = {'regularMarketPrice': latest_close_price}
+
         chart_data = {
             'x': [item['date'] for item in historical_data],
             'y': [item['close'] for item in historical_data],
