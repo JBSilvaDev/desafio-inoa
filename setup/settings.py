@@ -167,4 +167,4 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'jbsilva.bkp@gmail.com') # 
 # ATENÇÃO: Substitua 'SUA_CHAVE_DA_API_BRAPI' pela sua chave real.
 # Obtenha sua chave em https://brapi.dev/
 BRAPI_API_KEY = os.getenv('BRAPI_API_KEY', 'SUA_CHAVE_DA_API_BRAPI')
-ALPHA_VANTAGE_API = os.getenv('BRAPI_API_KEY', 'SUA_CHAVE_DA_API_BRAPI')
+ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY', 'SUA_CHAVE_DA_API_ALPHA_VANTAGE')
