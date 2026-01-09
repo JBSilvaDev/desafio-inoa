@@ -81,19 +81,51 @@ Detalhes do Ativo
                 if (chartData && chartData.error) {
                     $(plotDiv).html('<center><p class="text-danger">' + chartData.error + '</p></center>');
                 } else if (chartData && chartData.x && chartData.x.length > 0 && chartData.y && chartData.y.length > 0) {
-                    const trace = {
-                        x: chartData.x.map(d => (typeof d === 'string' ? new Date(d) : new Date(d * 1000))),
-                        y: chartData.y,
-                        type: 'line',
-                        name: chartData.title,
-                    };
-                    const layout = {
+                    
+                    const dates = chartData.x.map(d => (typeof d === 'string' ? new Date(d) : new Date(d * 1000)));
+                    const traces = [];
+                    let layout = {
                         title: chartData.title,
                         xaxis: { title: 'Data', automargin: true },
                         yaxis: { title: 'Preço (R$)', automargin: true },
                         autosize: true,
+                        legend: {x: 0.01, y: 0.99, xanchor: 'left', yanchor: 'top'}
                     };
-                    Plotly.newPlot(plotDiv, [trace], layout, { responsive: true });
+
+                    // Traço do preço (sempre existe)
+                    traces.push({
+                        x: dates,
+                        y: chartData.y,
+                        type: 'line',
+                        name: 'Fechamento',
+                        line: { color: '#1f77b4', width: 2 }
+                    });
+
+                    // Se houver dados de volume (API Alpha Vantage)
+                    if (chartData.volume && chartData.volume.length > 0) {
+                        traces.push({
+                            x: dates,
+                            y: chartData.volume,
+                            type: 'bar',
+                            name: 'Volume',
+                            yaxis: 'y2',
+                            marker: { color: '#888888', opacity: 0.3 }
+                        });
+
+                        layout.yaxis2 = {
+                            title: 'Volume',
+                            overlaying: 'y',
+                            side: 'right',
+                            showgrid: false,
+                            automargin: true
+                        };
+                        layout.title = `${chartData.title} (Alpha Vantage)`;
+                    } else {
+                        layout.title = `${chartData.title} (brapi)`;
+                    }
+
+                    Plotly.newPlot(plotDiv, traces, layout, { responsive: true });
+
                 } else {
                     $(plotDiv).html('<center><p class="text-warning">Não há dados históricos disponíveis para exibir o gráfico.</p></center>');
                 }

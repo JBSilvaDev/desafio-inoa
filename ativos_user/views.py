@@ -260,23 +260,29 @@ def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
     if not historical_data:
         return {'error': f"Nenhum dado histórico encontrado para {stock_code} com os intervalos solicitados."}
 
-    # Determinar a chave de fechamento com base na função usada
+    # Determinar a chave de fechamento e volume com base na função usada
     close_key = ''
+    volume_key = ''
     if 'ADJUSTED' in used_function:
         close_key = config.get('close_key_adjusted', '4. close')
+        volume_key = '6. volume' # Dados ajustados geralmente têm volume na chave 6
     else:
         close_key = config.get('close_key_unadjusted', '4. close')
-    
+        volume_key = '5. volume' if 'INTRADAY' not in used_function else '5. volume'
+
     # Fallback para close_key se a chave específica não for encontrada nos dados
     if not any(close_key in item for item in historical_data.values()):
         close_key = '4. close' # Tentar a chave padrão se a ajustada não estiver presente
+    if not any(volume_key in item for item in historical_data.values()):
+        volume_key = '5. volume' # Tentar a chave de volume padrão
 
     parsed_data = []
     for date_str, item in historical_data.items():
         try:
             timestamp = int(datetime.strptime(date_str, date_format).timestamp())
             close_price = float(item[close_key])
-            parsed_data.append({'date': timestamp, 'close': close_price})
+            volume = int(item[volume_key])
+            parsed_data.append({'date': timestamp, 'close': close_price, 'volume': volume})
         except (ValueError, KeyError) as e:
             print(f"Erro ao processar item de histórico para {stock_code} ({date_str}): {e}")
             continue
@@ -306,6 +312,7 @@ def detalhes_ativo(request, ativo_user_id):
             chart_data = {
                 'x': [item['date'] for item in historical_data],
                 'y': [item['close'] for item in historical_data],
+                'volume': [item['volume'] for item in historical_data],
                 'title': f'Histórico de Preços de {cod_ativo}',
             }
     else: # Padrão é brapi
