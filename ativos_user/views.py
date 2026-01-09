@@ -181,30 +181,42 @@ def get_stock_data_alpha_vantage(stock_code):
 
 def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
     api_key = settings.ALPHA_VANTAGE_API_KEY
-    # Adicionar sufixo .SA para ações brasileiras
     if not stock_code.endswith('.SA'):
         stock_code += '.SA'
 
-    # Mapear o intervalo para a função da API Alpha Vantage
+    function = ''
+    interval = ''
+    adjusted = False
+    time_series_key_map = {}
+
     if 'min' in interval_param:
         function = 'TIME_SERIES_INTRADAY'
         interval = interval_param
-        adjusted = False
+        time_series_key_map[function] = f'Time Series ({interval_param})'
     elif interval_param == '1d':
-        function = 'TIME_SERIES_DAILY_ADJUSTED'
-        adjusted = True
+        function = 'TIME_SERIES_DAILY'
+        adjusted = True # Tentaremos usar o ajustado
+        time_series_key_map[function] = 'Time Series (Daily)'
+        time_series_key_map['TIME_SERIES_DAILY_ADJUSTED'] = 'Time Series (Daily)' # Caso a função seja explicitamente ajustada
     elif interval_param == '1wk':
-        function = 'TIME_SERIES_WEEKLY_ADJUSTED'
-        adjusted = True
+        function = 'TIME_SERIES_WEEKLY'
+        adjusted = True # Tentaremos usar o ajustado
+        time_series_key_map[function] = 'Weekly Time Series'
+        time_series_key_map['TIME_SERIES_WEEKLY_ADJUSTED'] = 'Weekly Adjusted Time Series'
     elif interval_param == '1mo':
-        function = 'TIME_SERIES_MONTHLY_ADJUSTED'
-        adjusted = True
+        function = 'TIME_SERIES_MONTHLY'
+        adjusted = True # Tentaremos usar o ajustado
+        time_series_key_map[function] = 'Monthly Time Series'
+        time_series_key_map['TIME_SERIES_MONTHLY_ADJUSTED'] = 'Monthly Adjusted Time Series'
     else:
-        return []
+        return {'error': 'Intervalo de tempo inválido para Alpha Vantage.'}
 
     url = f"https://www.alphavantage.co/query?function={function}&symbol={stock_code}&apikey={api_key}"
     if function == 'TIME_SERIES_INTRADAY':
         url += f"&interval={interval}"
+    elif adjusted: # Para funções diárias, semanais e mensais, se quisermos ajustado, usamos a função _ADJUSTED
+        url = f"https://www.alphavantage.co/query?function={function}_ADJUSTED&symbol={stock_code}&apikey={api_key}"
+        function = function + '_ADJUSTED' # Atualiza a função para corresponder à URL
 
     print(f"Chamando API Alpha Vantage para histórico: {url}")
 
@@ -213,26 +225,49 @@ def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
         response.raise_for_status()
         data = response.json()
 
-        # Encontrar a chave correta para os dados de série temporal
-        time_series_key = next((key for key in data if 'Time Series' in key), None)
-        if not time_series_key:
-            print(f"Nenhuma chave de série temporal encontrada na resposta da Alpha Vantage para {stock_code}. Resposta: {data}")
-            if 'Note' in data:
-                print(f"Nota da API Alpha Vantage: {data['Note']}")
-            return []
+        if 'Information' in data:
+            error_message = f"Erro da API Alpha Vantage: {data['Information']}"
+            print(error_message)
+            return {'error': error_message}
+        if 'Error Message' in data:
+            error_message = f"Erro da API Alpha Vantage: {data['Error Message']}"
+            print(error_message)
+            return {'error': error_message}
+
+        time_series_key = time_series_key_map.get(function)
+        if not time_series_key or time_series_key not in data:
+            # Tenta encontrar a chave de forma mais genérica se o mapeamento falhar
+            time_series_key = next((key for key in data if 'Time Series' in key or 'Daily' in key or 'Weekly' in key or 'Monthly' in key), None)
+            if not time_series_key:
+                error_message = f"Nenhuma chave de série temporal encontrada na resposta da Alpha Vantage para {stock_code}. Resposta: {data}"
+                print(error_message)
+                return {'error': error_message}
 
         historical_data = data[time_series_key]
         
-        close_key = '5. adjusted close' if adjusted else '4. close'
+        close_key = '5. adjusted close' if adjusted and any('5. adjusted close' in item for item in historical_data.values()) else '4. close'
+        
+        # Determinar o formato da data com base na função
+        date_format = '%Y-%m-%d %H:%M:%S' if 'INTRADAY' in function else '%Y-%m-%d'
 
-        return [
-            {'date': int(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S' if 'min' in interval_param else '%Y-%m-%d').timestamp()), 'close': float(item[close_key])}
-            for date_str, item in historical_data.items()
-        ]
+        parsed_data = []
+        for date_str, item in historical_data.items():
+            try:
+                timestamp = int(datetime.strptime(date_str, date_format).timestamp())
+                close_price = float(item[close_key])
+                parsed_data.append({'date': timestamp, 'close': close_price})
+            except (ValueError, KeyError) as e:
+                print(f"Erro ao processar item de histórico para {stock_code} ({date_str}): {e}")
+                continue
+        
+        # A API Alpha Vantage retorna os dados em ordem decrescente de data, precisamos inverter
+        parsed_data.reverse()
+        return parsed_data
 
-    except (requests.exceptions.RequestException, json.JSONDecodeError, KeyError) as e:
-        print(f"Erro ao buscar ou processar histórico da Alpha Vantage para {stock_code}: {e}")
-        return []
+    except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+        error_message = f"Erro ao buscar ou processar histórico da Alpha Vantage para {stock_code}: {e}"
+        print(error_message)
+        return {'error': error_message}
 
 @login_required(login_url='login')
 def detalhes_ativo(request, ativo_user_id):
