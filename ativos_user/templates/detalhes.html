@@ -157,7 +157,7 @@ Detalhes do Ativo
                         layout.title = `${chartData.title} (brapi)`;
                     }
 
-                    Plotly.newPlot(plotDiv, traces, layout, { responsive: true });
+                    Plotly.newPlot(plotDiv, traces, layout, { responsive: true, useResizeHandler: true });
 
                 } else {
                     $(plotDiv).html('<center><p class="text-warning">Não há dados históricos disponíveis para exibir o gráfico.</p></center>');
@@ -225,9 +225,7 @@ Detalhes do Ativo
                 $(this).addClass('active');
             });
 
-            $(window).on('resize', function() {
-                Plotly.Plots.resize(plotDiv);
-            });
+
         });
     </script>
 
