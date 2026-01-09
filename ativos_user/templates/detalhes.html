@@ -42,34 +42,72 @@ Detalhes do Ativo
         </section>
     </div>
 
-    <div id="plot"></div>
+    <div id="chart-container" class="container mt-4">
+        <div class="btn-group" role="group" aria-label="Intervalos do Gráfico">
+            <button type="button" class="btn btn-secondary" data-range="5d" data-interval="1d">Dia</button>
+            <button type="button" class="btn btn-secondary" data-range="1mo" data-interval="1wk">Semana</button>
+            <button type="button" class="btn btn-secondary" data-range="1mo" data-interval="1d">Mês</button>
+            <button type="button" class="btn btn-secondary" data-range="3mo" data-interval="1d">3 Meses</button>
+        </div>
+        <div id="plot-loading" style="display: none; text-align: center; padding: 20px;">
+            <p>Carregando...</p>
+        </div>
+        <div id="plot"></div>
+    </div>
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-
     <script>
         $(document).ready(function () {
-            const chartData = JSON.parse('{{ chart_data_json|escapejs }}');
+            const initialChartData = JSON.parse('{{ chart_data_json|escapejs }}');
+            const plotDiv = document.getElementById('plot');
 
-            if (chartData && chartData.x && chartData.x.length > 0 && chartData.y && chartData.y.length > 0) {
-                Plotly.newPlot('plot', [{
-                    x: chartData.x.map(dateString => new Date(dateString)),
-                    y: chartData.y,
-                    type: 'line',
-                    name: chartData.title,
-                }], {
-                    title: chartData.title,
-                    xaxis: {
-                        title: 'Data'
+            function plotChart(chartData) {
+                if (chartData && chartData.x && chartData.x.length > 0 && chartData.y && chartData.y.length > 0) {
+                    Plotly.newPlot(plotDiv, [{
+                        x: chartData.x.map(dateString => new Date(dateString * 1000)),
+                        y: chartData.y,
+                        type: 'line',
+                        name: chartData.title,
+                    }], {
+                        title: chartData.title,
+                        xaxis: { title: 'Data' },
+                        yaxis: { title: 'Preço (R$)' }
+                    });
+                } else {
+                    $(plotDiv).html('<center><p class="text-warning">Não há dados históricos disponíveis para exibir o gráfico.</p></center>');
+                }
+            }
+
+            plotChart(initialChartData);
+
+            $('.btn-group .btn').click(function () {
+                const range = $(this).data('range');
+                const interval = $(this).data('interval');
+                const url = `{% url 'ativos_user:detalhes_ativo' ativo_user.id %}?range=${range}&interval=${interval}`;
+
+                $('#plot').hide();
+                $('#plot-loading').show();
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
-                    yaxis: {
-                        title: 'Preço (R$)'
+                    success: function (data) {
+                        plotChart(data);
+                        $('#plot-loading').hide();
+                        $('#plot').show();
+                    },
+                    error: function (error) {
+                        console.error('Erro ao buscar dados do gráfico:', error);
+                        $('#plot-loading').hide();
+                        $('#plot').html('<center><p class="text-danger">Erro ao carregar os dados do gráfico.</p></center>').show();
                     }
                 });
-            } else {
-                $('#plot').html('<center><p class="text-warning">Não há dados históricos disponíveis para exibir o gráfico.</p></center>');
-            }
+            });
         });
     </script>
 
