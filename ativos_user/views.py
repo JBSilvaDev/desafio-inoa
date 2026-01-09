@@ -152,16 +152,96 @@ def home_ativos(request): # Nova view para a Home
     
     return render(request, 'home_ativos.html', {'ativos': ativos_por_pagina})
 
+def get_stock_data_alpha_vantage(stock_code):
+    api_key = settings.ALPHA_VANTAGE_API_KEY
+    # Adicionar sufixo .SA para ações brasileiras
+    if not stock_code.endswith('.SA'):
+        stock_code += '.SA'
+        
+    url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={stock_code}&apikey={api_key}"
+    print(f"Chamando API Alpha Vantage para dados atuais: {url}")
+    
+    try:
+        response = requests.get(url, verify=False)
+        response.raise_for_status()
+        data = response.json()
+        
+        quote = data.get('Global Quote')
+        if quote:
+            return {
+                'symbol': quote.get('01. symbol'),
+                'regularMarketPrice': quote.get('05. price'),
+                'regularMarketChange': quote.get('09. change'),
+                'regularMarketChangePercent': quote.get('10. change percent'),
+                'regularMarketVolume': quote.get('06. volume'),
+            }
+    except requests.exceptions.RequestException as e:
+        print(f"Erro ao buscar dados da Alpha Vantage para {stock_code}: {e}")
+    return None
+
+def get_stock_history_alpha_vantage(stock_code, interval_param='60min'):
+    api_key = settings.ALPHA_VANTAGE_API_KEY
+    # Adicionar sufixo .SA para ações brasileiras
+    if not stock_code.endswith('.SA'):
+        stock_code += '.SA'
+
+    # Mapear o intervalo para a função da API Alpha Vantage
+    if 'min' in interval_param:
+        function = 'TIME_SERIES_INTRADAY'
+        interval = interval_param
+    elif interval_param == '1d':
+        function = 'TIME_SERIES_DAILY'
+    elif interval_param == '1wk':
+        function = 'TIME_SERIES_WEEKLY'
+    elif interval_param == '1mo':
+        function = 'TIME_SERIES_MONTHLY'
+    else:
+        return []
+
+    url = f"https://www.alphavantage.co/query?function={function}&symbol={stock_code}&apikey={api_key}"
+    if function == 'TIME_SERIES_INTRADAY':
+        url += f"&interval={interval}"
+
+    print(f"Chamando API Alpha Vantage para histórico: {url}")
+
+    try:
+        response = requests.get(url, verify=False)
+        response.raise_for_status()
+        data = response.json()
+
+        # Encontrar a chave correta para os dados de série temporal
+        time_series_key = next((key for key in data if 'Time Series' in key), None)
+        if not time_series_key:
+            print(f"Nenhuma chave de série temporal encontrada na resposta da Alpha Vantage para {stock_code}")
+            return []
+
+        historical_data = data[time_series_key]
+        
+        return [
+            {'date': int(datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S' if 'min' in interval_param else '%Y-%m-%d').timestamp()), 'close': float(item['4. close'])}
+            for date_str, item in historical_data.items()
+        ]
+
+    except (requests.exceptions.RequestException, json.JSONDecodeError, KeyError) as e:
+        print(f"Erro ao buscar ou processar histórico da Alpha Vantage para {stock_code}: {e}")
+        return []
+
 @login_required(login_url='login')
 def detalhes_ativo(request, ativo_user_id):
     ativo_user = get_object_or_404(AtivosUser, id=ativo_user_id, user=request.user)
     cod_ativo = ativo_user.ativo.cod_ativo
     
+    api_source = request.GET.get('api', 'brapi')
     range_param = request.GET.get('range', '1mo')
     interval_param = request.GET.get('interval', '1d')
 
-    historical_data = get_stock_history(cod_ativo, range_param, interval_param)
-    
+    if api_source == 'alpha':
+        stock_data = get_stock_data_alpha_vantage(cod_ativo)
+        historical_data = get_stock_history_alpha_vantage(cod_ativo, interval_param)
+    else: # Padrão é brapi
+        stock_data = get_stock_data(cod_ativo)
+        historical_data = get_stock_history(cod_ativo, range_param, interval_param)
+
     chart_data = {
         'x': [item['date'] for item in historical_data],
         'y': [item['close'] for item in historical_data],
@@ -172,13 +252,13 @@ def detalhes_ativo(request, ativo_user_id):
         return JsonResponse(chart_data)
 
     form = AtivoUserForm(instance=ativo_user)
-    stock_data = get_stock_data(cod_ativo)
 
     context = {
         'ativo_user': ativo_user,
         'stock_data': stock_data,
         'chart_data_json': json.dumps(chart_data),
         'form': form,
+        'api_source': api_source, # Passar a fonte da API para o template
     }
     return render(request, 'detalhes.html', context)
 
