@@ -280,16 +280,26 @@ def detalhes_ativo(request, ativo_user_id):
 
     if api_source == 'alpha':
         stock_data = get_stock_data_alpha_vantage(cod_ativo)
-        historical_data = get_stock_history_alpha_vantage(cod_ativo, interval_param)
+        historical_data_result = get_stock_history_alpha_vantage(cod_ativo, interval_param)
+        
+        if isinstance(historical_data_result, dict) and 'error' in historical_data_result:
+            chart_data = {'error': historical_data_result['error']}
+            historical_data = [] # Garante que historical_data seja uma lista
+        else:
+            historical_data = historical_data_result
+            chart_data = {
+                'x': [item['date'] for item in historical_data],
+                'y': [item['close'] for item in historical_data],
+                'title': f'Histórico de Preços de {cod_ativo}',
+            }
     else: # Padrão é brapi
         stock_data = get_stock_data(cod_ativo)
         historical_data = get_stock_history(cod_ativo, range_param, interval_param)
-
-    chart_data = {
-        'x': [item['date'] for item in historical_data],
-        'y': [item['close'] for item in historical_data],
-        'title': f'Histórico de Preços de {cod_ativo}',
-    }
+        chart_data = {
+            'x': [item['date'] for item in historical_data],
+            'y': [item['close'] for item in historical_data],
+            'title': f'Histórico de Preços de {cod_ativo}',
+        }
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'chart_data': chart_data, 'stock_data': stock_data})
