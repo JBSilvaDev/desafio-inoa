@@ -45,7 +45,6 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina local
 ### 1. Clonar o Repositório e Criar Ambiente Virtual
 
 ```bash
-# Substitua <URL_DO_SEU_REPOSITORIO> pela URL do seu repositório Git
 git clone https://github.com/JBSilvaDev/desafio-inoa
 cd desafio-inoa
 python -m venv venv
@@ -108,6 +107,9 @@ BRAPI_API_KEY=SUA_CHAVE_DA_API_BRAPI
     4.  Siga as instruções para gerar uma nova senha de aplicativo. Utilize essa senha no seu arquivo `.env`.
 *   **`BRAPI_API_KEY`:**
     1.  Visite o site da [brapi.dev](https://brapi.dev/).
+    2.  Crie uma conta gratuita e obtenha sua chave de API.
+*   **`ALPHA_VANTAGE_API_KEY`:**
+    1.  Visite o site da [Alpha Vantage Stock API](https://www.alphavantage.co/support/#api-key).
     2.  Crie uma conta gratuita e obtenha sua chave de API.
 
 ### 5. Migrações do Banco de Dados
